@@ -1,0 +1,23 @@
+{
+  "name": "news-bundles",
+  "homepage": "https://github.com/jasrub/news-bundles",
+  "authors": [
+    "Jasmin Rubinovitz <jasrub@gmail.com>"
+  ],
+  "description": "using super-glue to visualize news clusters and channels differences",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "d3": "^4.2.2"
+  }
+}

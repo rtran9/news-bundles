@@ -155,15 +155,16 @@ def get_segments_text(media):
         start = segs[i]["start"]
         end = segs[i]["end"]
         text = ""
-        seg_caps = [cap["text"] for cap in media[captions] if cap["start"]>=start and cap["start"]<end]
+        seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
         text = " ".join(seg_caps)
         url = "%s#t=%.2f,%.2f"%(media["media_url_no_comm"],start/1000.0,end/1000)
+        length = float(end)-float(start)
         temp_name = file_name(url)
-        if len(text.strip())>30 and temp_name not in urls:
-            texts.append({"text":text, "start":start, "end":end, "url":url, "channel":media["channel"]})
+        if len(text.strip())>200 and length>4000 and temp_name not in urls:
+            texts.append({"text":text, "start":start, "end":end, "url":url, "channel":media["channel"], "length":length})
             urls.add(temp_name)
-        elif file_name(url) in urls:
-            print media["_id"]
+        # elif file_name(url) in urls:
+        #     print media["_id"]
     return texts
 
 def get_all_segments():
@@ -195,14 +196,17 @@ def process_texts(all_segments):
 
     seg_texts = [seg["text"] for seg in all_segments] # list of all tweet texts
     seg_texts_processed = [str.join(" ", seg["processed"]) for seg in all_segments] # list of pre-processed tweet texts
+    for seg in all_segments:
+        seg.pop("processed")
     return seg_texts_processed
 
 def run_lda(all_segments, seg_texts_processed):
     cvectorizer = CountVectorizer(max_df=0.7, min_df=3, max_features=150000, stop_words='english', ngram_range=(1,1))
     cvz = cvectorizer.fit_transform(seg_texts_processed)
 
-    n_topics = 12
-    n_iter = 900
+    n_topics = int(len(all_segments)/10)
+    print "%d topics"%n_topics
+    n_iter = 1000
     lda_model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
     X_topics = lda_model.fit_transform(cvz)
 
@@ -228,12 +232,30 @@ def run_lda(all_segments, seg_texts_processed):
         print
 
     print
+    results = []#{'children':[]}
     for i, topic in enumerate(topic_summaries):
         print topic + " - " + str(len(clusters[i]))
-        print"--------------------------------------------------"
-        for seg in sorted(clusters[i], key=lambda k:k["channel"]):
-            print seg["url"]
-            print seg["channel"]
+        channels = list(set([seg["channel"] for seg in clusters[i] ]))
+        segs_by_channel = {channel:[segm for segm in clusters[i] if segm["channel"]==channel] for channel in channels}
+        words = [{"text":word, "size":vocab.index(word)} for word in topic.split('-')]
+        for chann in segs_by_channel.keys():
+            print "channel: %s - videos: %d"%(chann, len(segs_by_channel[chann]))
+        results.append({
+            'id':i,
+            'summary':topic,
+            'value':len(clusters[i]),
+            'segments':segs_by_channel,
+            'images':[],
+            'words':words
+            })
+    topics_to_return = 16 if n_topics>30 else 9
+    return {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
+            'vocab_size':len(vocab)}
+
+def get_data():
+    all_segments = get_all_segments()
+    processed_segments = process_texts(all_segments)
+    return run_lda(all_segments, processed_segments)
 
 
 if __name__ == '__main__':
