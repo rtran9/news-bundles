@@ -171,7 +171,7 @@ def get_all_segments():
     MONGO_URL = 'mongodb://um.media.mit.edu:27017/super-glue'
     collection = MongoClient(MONGO_URL).get_default_database()['media']
 
-    all_media_has_segments = collection.find({"date_added": {"$gt": millis_since('1')},"no_comm_segments":{"$exists": True}})
+    all_media_has_segments = collection.find({"date_added": {"$gt": millis_since('3'), "$lt": millis_since('2')},"no_comm_segments":{"$exists": True}})
     num_of_videos = all_media_has_segments.count()
     print "%d videos"%num_of_videos
     total_segments = 0
@@ -236,10 +236,8 @@ def run_lda(all_segments, seg_texts_processed):
     for i, topic in enumerate(topic_summaries):
         print topic + " - " + str(len(clusters[i]))
         channels = list(set([seg["channel"] for seg in clusters[i] ]))
-        segs_by_channel = {channel:[segm for segm in clusters[i] if segm["channel"]==channel] for channel in channels}
+        segs_by_channel = [{"channel":channel,"videos":[segm for segm in clusters[i] if segm["channel"]==channel]} for channel in channels]
         words = [{"text":word, "size":vocab.index(word)} for word in topic.split('-')]
-        for chann in segs_by_channel.keys():
-            print "channel: %s - videos: %d"%(chann, len(segs_by_channel[chann]))
         results.append({
             'id':i,
             'summary':topic,
