@@ -12,11 +12,11 @@ def index():
 
 @app.route("/data")
 def data():
-	with open('static/data2.json') as json_data:
+	with open('static/data/data7.json') as json_data:
 		d = json.load(json_data)
 	return jsonify(d)
     # return jsonify(get_data())
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

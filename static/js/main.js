@@ -115,7 +115,7 @@ function createVideos() {
 353:'BTV',		
 249:'COMHD',		
 357:'CNBW',	
-347:'AJAM',	
+347:'MSNB',	
 202:'CNN',		
 355:'CNBC',	
 350:'CSP1',		

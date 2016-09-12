@@ -3,20 +3,29 @@
   <head>
     <title>Visualizaing News Topics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href={{ url_for('static', filename='main.css') }} rel="stylesheet" media="screen">
+    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet" media="screen">
 
     <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-    <div id="chart">
+    <div class="scrollbar" id="scrollbar">
+    <div class="handle"></div>
     </div>
+    <div class="frame" id="frame">
+    <ul class="slidee" id="stories-list">
+    </ul>
+    </div>
+<!--     <div class="scrollmenu" id="stories-menu">
+    </div> -->
+<!--     <div id="chart"></div> -->
 
     </div>
     <script src={{ url_for('static', filename='./bower_components/jquery/dist/jquery.min.js') }}></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src={{ url_for('static', filename='d3-grid.js') }}></script>
-    <script src={{ url_for('static', filename='d3-comperator.js') }}></script>
-    <script src={{ url_for('static', filename='main.js') }}></script>
+    <script src={{ url_for('static', filename='js/d3-grid.js') }}></script>
+    <script src={{ url_for('static', filename='js/d3-comperator.js') }}></script>
+    <script src={{ url_for('static', filename='js/sly.js') }}></script>
+    <script src={{ url_for('static', filename='js/main-tmp.js') }}></script>
   </body>
 </html>

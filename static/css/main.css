@@ -1,0 +1,86 @@
+/* custom css */
+
+body {
+    background-color: #e8e8e8;
+}
+
+.area {
+  fill: #e7e7e7;
+}
+
+.cluster {
+	font-family: 'Slabo 27px', serif;
+}
+
+.cluster-title {
+	font-family: 'Slabo 50px', serif;
+	color: #6666cc;
+}
+
+/*li {
+	color:"black";
+}*/
+.frame { width: 100%; height: 160px; padding: 0; }
+.frame .slidee { margin: 0; padding: 0; height: 100%; list-style: none; }
+.frame .slidee li { 
+    font-family: 'Slabo 27px', serif;
+    float: left; 
+    text-align: center;
+    margin: 0 5px 0 0; 
+    width:200px;
+    padding: 0; 
+    height: 100%; 
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+.frame .slidee li:hover {
+    background-color: #777;
+}
+
+.frame .slidee li.active {
+    background-color: #666;
+}
+
+
+.scrollbar {
+    width:100%;
+    margin: 0 0 1em 0;
+    height: 3px;
+    background: #ccc;
+    line-height: 0;
+}
+.scrollbar .handle {
+    width: 100px; /* overriden if dynamicHandle: 1 */
+    height: 100%;
+    background: #222;
+    cursor: pointer;
+}
+
+
+div.scrollmenu ul{
+    background-color: #333;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+div.scrollmenu li{
+	font-family: 'Slabo 27px', serif;
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+div.scrollmenu a{
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+div.scrollmenu li:hover {
+    background-color: #777;
+}
