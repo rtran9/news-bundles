@@ -258,6 +258,9 @@ function createVideo(video, videoId, storyIdnex, channel) {
     playButton.innerHTML = "►";
     }
     });
+  vid.addEventListener('paused', function() {
+    playButton.innerHTML = "►";
+   }, false);
 
 
   var prevButton=document.createElement('a');
