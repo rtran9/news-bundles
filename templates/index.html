@@ -3,29 +3,37 @@
   <head>
     <title>Visualizaing News Topics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet" media="screen">
-
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    
     <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet">
+
+    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet" media="screen" type="text/css">
   </head>
   <body>
     <div class="container">
-    <div class="scrollbar" id="scrollbar">
-    <div class="handle"></div>
-    </div>
-    <div class="frame" id="frame">
-    <ul class="slidee" id="stories-list">
-    </ul>
-    </div>
-<!--     <div class="scrollmenu" id="stories-menu">
-    </div> -->
-<!--     <div id="chart"></div> -->
+
+      <!-- The stories menu and scrollbar for it -->
+      <div class="scrollbar" id="scrollbar">
+        <div class="handle"></div>
+      </div>
+      <div class="frame" id="frame">
+        <ul class="slidee" id="stories-list">
+        </ul>
+      </div>
+
+
+      <!-- videos -->
+      <div class="w3-row-padding w3-section  w3-padding row-centered" id="videos-section">
+      </div>
+
 
     </div>
-    <script src={{ url_for('static', filename='./bower_components/jquery/dist/jquery.min.js') }}></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
-    <script src={{ url_for('static', filename='js/d3-grid.js') }}></script>
-    <script src={{ url_for('static', filename='js/d3-comperator.js') }}></script>
+
+    <!-- scripts -->
+    <script src={{ url_for('static', filename='js/d3.js') }}></script>
+    <script src={{ url_for('static', filename='js/jquery-3.1.0.min.js') }}></script>
     <script src={{ url_for('static', filename='js/sly.js') }}></script>
-    <script src={{ url_for('static', filename='js/main-tmp.js') }}></script>
+    <script src={{ url_for('static', filename='js/main.js') }}></script>
   </body>
 </html>
