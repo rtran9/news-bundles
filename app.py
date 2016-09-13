@@ -28,6 +28,10 @@ def data():
 		d = json.load(json_data)
 	return jsonify(d)
 
+@app.route("/get_data")
+def get_now_data():
+	return jsonify(get_data())
+
 
 if __name__ == "__main__":
     app.run()
