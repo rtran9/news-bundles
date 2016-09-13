@@ -185,11 +185,6 @@ function addVideos(i) {
         currDiv.appendChild(vid);
         storyDiv.appendChild(currDiv);
 
-        //vid.setAttribute("controls","controls")  
-        //vid.setAttribute("class", "vjs-default-skin");
-
-        
-
         var source = document.createElement('source');
         source.src = channels[j].videos[indexes[i][channelNum]].url;
         source.type = "video/mp4";
@@ -197,20 +192,7 @@ function addVideos(i) {
         vid.appendChild(source);
 
         createVideo(vid, vidId, i, channelNum);
-
-
-        // var playlist = []
-        // for (var k=0; k<channels[j].videos.length; k++){
-        //     var source = document.createElement('source');
-        //     source.src = channels[j].videos[k].url;
-        //     source.type = "video/mp4";
-
-        //     vid.appendChild(source);
-        // }
-
-        // Play through the playlist automatically.
     }
-    //storyDiv.style.display = 'none';
 }
 
 var channelsDict = {
@@ -325,6 +307,10 @@ function changeSrc(move, storyIndex, channel) {
     var prevButton = document.getElementById("video-player-"+storyIndex+"-"+channel+"-prev-button");
     var nextButton = document.getElementById("video-player-"+storyIndex+"-"+channel+"-next-button");
     buttonsStatus(prevButton, nextButton, channel, storyIndex);
+
+    // Update the button text to 'Play'
+    var playButton = document.getElementById("video-player-"+storyIndex+"-"+channel+"play-pause");
+    playButton.innerHTML = "►";
 }
 
 function buttonsStatus(prevButton, nextButton, channel, storyIdnex) {
