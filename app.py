@@ -10,11 +10,12 @@ def initialize():
     scheduler = BackgroundScheduler()
     scheduler.add_job(cach_data, 'interval', hours=1)
     scheduler.start()
+    cach_data()
 
 
 def cach_data():
 	data = get_data()
-	with open('static/data.json', 'w') as outfile:
+	with open('static/data/data.json', 'w') as outfile:
 		json.dump(data, outfile)
 
 @app.route("/")
@@ -34,4 +35,4 @@ def get_now_data():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

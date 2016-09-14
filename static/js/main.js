@@ -144,7 +144,6 @@ function makelist(array) {
 }
 
 function selectedStory(i) {
-  console.log(data.children[i].summary)
   frame.activate(i); // Activates i-th element
   emptyVidoesSection();
   var currStoryId = "story-videos-"+i;
@@ -204,31 +203,31 @@ function addVideos(i) {
 }
 
 var channelsDict = {
-284:'SCIHD',	
-229:'HGTV',	
-232:'COOKHD',
-276:'NGCHD',
-264:'BBCAHD',
-278:'DSCHD',		
-237:'BRVOHD',
-242:'USAHD',		
-231:'FOODHD',		
-244:'SyFyHD',		
-375:'LINK',		
-025:'WFXT',		
-351:'CSP2',		
-002:'WGBH',		
-353:'BTV',		
-249:'COMHD',		
-357:'CNBW',	
-347:'MSNB',	
-202:'CNN',		
-355:'CNBC',	
-350:'CSP1',		
-360:'FOX NEWS',	
-356:'MNBC',	
-349:'NEWSX',		
-206:'ESPNHD'
+'284':'SCIHD',	
+'229':'HGTV',	
+'232':'COOKHD',
+'276':'NGCHD',
+'264':'BBCAHD',
+'278':'DSCHD',		
+'237':'BRVOHD',
+'242':'USAHD',		
+'231':'FOODHD',		
+'244':'SyFyHD',		
+'375':'LINK',		
+'025':'WFXT',		
+'351':'CSP2',		
+'002':'WGBH',		
+'353':'BTV',		
+'249':'COMHD',		
+'357':'CNBW',	
+'347':'MSNB',	
+'202':'CNN',		
+'355':'CNBC',	
+'350':'CSP1',		
+'360':'FOX NEWS',	
+'356':'MNBC',	
+'349':'NEWSX',		
+'206':'ESPNHD',
 }
 
 function createVideo(video, videoId, storyIdnex, channel) {
@@ -277,7 +276,7 @@ function createVideo(video, videoId, storyIdnex, channel) {
   var prevButton=document.createElement('a');
   prevButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomleft");
   prevButton.setAttribute("style", "left:3%");
-  var funcCall = "changeSrc(-1,"+storyIdnex+","+channel+")";
+  var funcCall = "changeSrc(-1,"+storyIdnex+",'"+channel+"')";
   prevButton.setAttribute("onclick", funcCall);
   prevButton.id = videoId+"-prev-button";
   prevButton.appendChild(document.createTextNode('❮'));
@@ -285,7 +284,7 @@ function createVideo(video, videoId, storyIdnex, channel) {
   var nextButton=document.createElement('a');
   nextButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomright");
   nextButton.setAttribute("style", "right:3%");
-  var funcCall = "changeSrc(+1,"+storyIdnex+","+channel+")";
+  var funcCall = "changeSrc(+1,"+storyIdnex+",'"+channel+"')";
   nextButton.setAttribute("onclick", funcCall);
   nextButton.id = videoId+"-next-button";
   nextButton.appendChild(document.createTextNode('❯'));
@@ -300,6 +299,8 @@ function changeSrc(move, storyIndex, channel) {
     indexes[storyIndex][channel]+=move;
     var videos = getVideosList(storyIndex, channel);
     var ind = indexes[storyIndex][channel]
+    console.log("story-ind: "+storyIndex)
+    console.log("channel: "+channel)
     console.log("ind: "+ind)
     var newSrc = getVideosList(storyIndex, channel)[indexes[storyIndex][channel]].url;
     var vid = document.getElementById("video-player-"+storyIndex+"-"+channel);
