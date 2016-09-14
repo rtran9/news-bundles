@@ -25,11 +25,11 @@ def get_texts(media):
     captions = "closed_captions_no_comm"
     media_url = "media_url_no_comm"
     if not media["module_reports"]["commercial_skip_module"]["removed_commercials"]:
+        media_url = "media_url"
         if "closed_captions_aligned" in media:
             captions = "closed_captions_aligned"
         else:
             captions = "closed_captions"
-        media_url = "media_url"
     texts = []
     file_name = lambda x:''.join(x.split('.')[4:])
     for i in range (len(segs)):
@@ -116,7 +116,7 @@ def run_lda(all_segments, seg_texts_processed):
     for i, topic in enumerate(topic_summaries):
         #print topic + " - " + str(len(clusters[i]))
         channels = list(set([seg["channel"] for seg in clusters[i] ]))
-        segs_by_channel = [{"channel":channel,"videos":sorted([segm for segm in clusters[i] if segm["channel"]==channel], key=lambda k:k["length"])} for channel in channels]
+        segs_by_channel = [{"channel":channel,"videos":[segm for segm in clusters[i] if segm["channel"]==channel]} for channel in channels]
         words = [{"text":word, "size":vocab.index(word)} for word in topic.split('-')]
         # if len(segs_by_channel)>1:
         results.append({
