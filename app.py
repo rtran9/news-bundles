@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.before_first_request
 def initialize():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(cach_data, 'interval', hours=1)
+    scheduler.add_job(cach_data, 'interval', hours=5)
     scheduler.start()
 
 
@@ -16,6 +16,7 @@ def cach_data():
 	data = get_data()
 	with open('static/data/data.json', 'w') as outfile:
 		json.dump(data, outfile)
+		print ('data saved to file')
 
 @app.route("/")
 def index():

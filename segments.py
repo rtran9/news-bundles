@@ -49,6 +49,7 @@ def get_texts(media):
     return texts
 
 def get_all_segments():
+    urls = []
     MONGO_URL = 'mongodb://um.media.mit.edu:27017/super-glue'
     collection = MongoClient(MONGO_URL).get_default_database()['media']
 
@@ -136,6 +137,7 @@ def run_lda(all_segments, seg_texts_processed):
 def get_data():
     all_segments = get_all_segments()
     processed_segments = process_texts(all_segments)
+    print ('finished processing segments, running LDA')
     return run_lda(all_segments, processed_segments)
 
 
