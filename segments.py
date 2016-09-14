@@ -23,11 +23,13 @@ def get_texts(media):
     segs = media["story_segments"]
     com_caps = media["commercials_captions"]
     captions = "closed_captions_no_comm"
+    media_url = "media_url_no_comm"
     if not media["module_reports"]["commercial_skip_module"]["removed_commercials"]:
         if "closed_captions_aligned" in media:
             captions = "closed_captions_aligned"
         else:
             captions = "closed_captions"
+        media_url = "media_url"
     texts = []
     file_name = lambda x:''.join(x.split('.')[4:])
     for i in range (len(segs)):
@@ -36,7 +38,7 @@ def get_texts(media):
         text = ""
         seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
         text = " ".join(seg_caps)
-        url = "%s#t=%.2f,%.2f"%(media["media_url_no_comm"],start/1000.0,end/1000)
+        url = "%s#t=%.2f,%.2f"%(media["media_url"],start/1000.0,end/1000)
         length = float(end)-float(start)
         temp_name = file_name(url)
         if len(text.strip())>200 and length>4000 and temp_name not in urls:

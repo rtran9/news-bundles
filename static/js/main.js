@@ -1,5 +1,13 @@
 // custom javascript
 
+window.setTimeout(function(){
+//refresh the page after 3600000 miliseconds (1 hour)
+
+
+//reload the page (javascript has many ways of doing this)
+location.reload();
+},3600000);
+
 var data;
 var frame;
 var indexes; // indexes[story-index][channel]  = current index of this channel video
