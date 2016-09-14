@@ -345,10 +345,10 @@ function getVideosList(storyIndex, channel) {
     return [];
 }
 
-$('video').hover(function toggleControls() {
-    if (this.hasAttribute("controls")) {
-        this.removeAttribute("controls")
-    } else {
-        this.setAttribute("controls", "controls")
-    }
-})
+// $('video').hover(function toggleControls() {
+//     if (this.hasAttribute("controls")) {
+//         this.removeAttribute("controls")
+//     } else {
+//         this.setAttribute("controls", "controls")
+//     }
+// })
