@@ -10,7 +10,6 @@ def initialize():
     scheduler = BackgroundScheduler()
     scheduler.add_job(cach_data, 'interval', hours=1)
     scheduler.start()
-    cach_data()
 
 
 def cach_data():

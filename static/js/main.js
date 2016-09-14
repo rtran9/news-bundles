@@ -123,7 +123,7 @@ function makelist(array) {
         var item = document.createElement('li');
         var funcCall = "selectedStory("+i+")";
         item.setAttribute("onclick", funcCall);
-        p = document.createElement('p');
+        p = document.createElement('div');
 
 
 
