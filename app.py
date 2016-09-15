@@ -11,6 +11,7 @@ app = Flask(__name__)
 def my_listener(event):
     if event.exception:
         print('The job crashed :(')
+        print "error({0}): {1}".format(event.exception.errno, event.exception.strerror)
     else:
         print('The job worked :)')
 

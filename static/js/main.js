@@ -241,6 +241,14 @@ function createVideo(video, videoId, storyIdnex, channel) {
    // Video is loaded and can be played
     }, false);
 
+  $('#'+videoId).hover(function toggleControls() {
+    if (this.hasAttribute("controls")) {
+        this.removeAttribute("controls")
+    } else {
+        this.setAttribute("controls", "controls")
+    }
+    })
+
   var parentDiv = video.parentNode;
 
   var height = parentDiv.clientHeight;
@@ -299,9 +307,6 @@ function changeSrc(move, storyIndex, channel) {
     indexes[storyIndex][channel]+=move;
     var videos = getVideosList(storyIndex, channel);
     var ind = indexes[storyIndex][channel]
-    console.log("story-ind: "+storyIndex)
-    console.log("channel: "+channel)
-    console.log("ind: "+ind)
     var newSrc = getVideosList(storyIndex, channel)[indexes[storyIndex][channel]].url;
     var vid = document.getElementById("video-player-"+storyIndex+"-"+channel);
     vid.pause();
@@ -347,7 +352,6 @@ function buttonsStatus(prevButton, nextButton, channel, storyIdnex) {
 function getVideosList(storyIndex, channel) {
     for (var k=0; k<data.children[storyIndex].segments.length; k++) {
         if (data.children[storyIndex].segments[k].channel==channel) {
-            console.log(data.children[storyIndex].segments[k].videos)
             return data.children[storyIndex].segments[k].videos;
         }
     }

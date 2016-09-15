@@ -20,6 +20,7 @@ def millis_since(num_days='2'):
     return millis() - days*DAY
 
 def get_texts(media):
+    print ("len of urls: %d" %len(urls))
     segs = media["story_segments"]
     com_caps = media["commercials_captions"]
     captions = "closed_captions_no_comm"
@@ -41,15 +42,15 @@ def get_texts(media):
         url = "%s#t=%.2f,%.2f"%(media["media_url"],start/1000.0,end/1000)
         length = float(end)-float(start)
         temp_name = file_name(url)
-        if len(text.strip())>200 and length>4000: #and temp_name not in urls:
+        if len(text.strip())>200 and length>4000 and temp_name not in urls:
             texts.append({"text":text, "start":start, "end":end, "url":url, "channel":media["channel"], "length":length})
-            #urls.append(temp_name)
+            urls.append(temp_name)
         # elif file_name(url) in urls:
         #     print media["_id"]
     return texts
 
 def get_all_segments():
-    urls = []
+    print ("len of urls: %d" %len(urls))
     MONGO_URL = 'mongodb://um.media.mit.edu:27017/super-glue'
     collection = MongoClient(MONGO_URL).get_default_database()['media']
 
@@ -65,6 +66,7 @@ def get_all_segments():
     return all_segments
 
 def process_texts(all_segments):
+    print ("starting to precess texts")
     # load nltk's English stopwords as variable called 'stopwords'
     stopwords = nltk.corpus.stopwords.words('english')
     pattern = re.compile('[\W_]+')
@@ -135,6 +137,7 @@ def run_lda(all_segments, seg_texts_processed):
             'vocab_size':len(vocab)}
 
 def get_data():
+    del urls[:]
     all_segments = get_all_segments()
     processed_segments = process_texts(all_segments)
     print ('finished processing segments, running LDA')
