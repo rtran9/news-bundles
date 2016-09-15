@@ -11,16 +11,24 @@ def my_listener(event):
     else:
         print('The job worked :)')
 
+def print_date_time():
+    print time.strftime("%A, %d. %B %Y %I:%M:%S %p")
 
 @app.before_first_request
 def initialize():
     scheduler = BackgroundScheduler()
+    print_date_time()
+    print("initializing app")
     scheduler.add_job(cach_data, 'interval', minutes=2)
     scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+    print("starting scheduler")
     scheduler.start()
+    # Shut down the scheduler when exiting the app
+    atexit.register(lambda: scheduler.shutdown())
 
 
 def cach_data():
+	print_date_time()
 	print ("starting cach data")
 	data = get_data()
 	with open('static/data/data.json', 'w') as outfile:
