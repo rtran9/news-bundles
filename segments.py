@@ -67,6 +67,7 @@ def process_texts(all_segments):
     print ("starting to precess texts")
     # load nltk's English stopwords as variable called 'stopwords'
     stopwords = nltk.corpus.stopwords.words('english')
+    print ("got stopwords!")
     pattern = re.compile('[\W_]+')
     nouns = ['NN', 'NNS', 'NNPS', 'NNP']
 
