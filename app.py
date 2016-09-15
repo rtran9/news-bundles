@@ -1,7 +1,10 @@
+import atexit
 import json
+import time
 from flask import Flask, render_template, jsonify
 from segments import get_data
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
 app = Flask(__name__)
 
@@ -19,7 +22,7 @@ def initialize():
     scheduler = BackgroundScheduler()
     print_date_time()
     print("initializing app")
-    scheduler.add_job(cach_data, 'interval', minutes=2)
+    scheduler.add_job(cach_data, 'interval', hours=1, replace_existing=True)
     scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     print("starting scheduler")
     scheduler.start()
