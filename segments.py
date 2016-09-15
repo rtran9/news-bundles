@@ -50,7 +50,6 @@ def get_texts(media):
     return texts
 
 def get_all_segments():
-    print ("len of urls: %d" %len(urls))
     MONGO_URL = 'mongodb://um.media.mit.edu:27017/super-glue'
     collection = MongoClient(MONGO_URL).get_default_database()['media']
 
