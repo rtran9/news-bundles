@@ -15,7 +15,7 @@ def my_listener(event):
 @app.before_first_request
 def initialize():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(cach_data, 'interval', minutes=5)
+    scheduler.add_job(cach_data, 'interval', minutes=2)
     scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     scheduler.start()
 
