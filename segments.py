@@ -35,14 +35,26 @@ def get_texts(media):
     for i in range (len(segs)):
         start = segs[i]["start"]
         end = segs[i]["end"]
+        thumb = "/static/images/blank.jpg"
+        if "thumbnail_image" in segs[i]:
+            thumb = segs[i]["thumbnail_image"]
         text = ""
         seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
         text = " ".join(seg_caps)
         url = "%s#t=%.2f,%.2f"%(media[media_url],start/1000.0,end/1000)
+        air_date = media["date_added"]
         length = float(end)-float(start)
         temp_name = file_name(url)
         if len(text.strip())>200 and length>4000 and temp_name not in urls:
-            texts.append({"text":text, "start":start, "end":end, "url":url, "channel":media["channel"], "length":length})
+            texts.append({
+                "text":text, 
+                "start":start, 
+                "end":end, 
+                "url":url, 
+                "channel":media["channel"], 
+                "length":length, 
+                "date":air_date, 
+                "thumbnail":thumb})
             urls.append(temp_name)
         # elif file_name(url) in urls:
         #     print media["_id"]
@@ -118,7 +130,7 @@ def run_lda(all_segments, seg_texts_processed):
     for i, topic in enumerate(topic_summaries):
         #print topic + " - " + str(len(clusters[i]))
         channels = list(set([seg["channel"] for seg in clusters[i] ]))
-        segs_by_channel = [{"channel":channel,"videos":[segm for segm in clusters[i] if segm["channel"]==channel]} for channel in channels]
+        segs_by_channel = [{"channel":channel,"videos":sorted([segm for segm in clusters[i] if segm["channel"]==channel],key=lambda x:x["date"])} for channel in channels]
         words = [{"text":word, "size":vocab.index(word)} for word in topic.split('-')]
         # if len(segs_by_channel)>1:
         results.append({

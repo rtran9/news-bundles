@@ -10,6 +10,7 @@ location.reload();
 
 var data;
 var frame;
+var imageFrames;
 var indexes; // indexes[story-index][channel]  = current index of this channel video
 var gridOn = true;
 var showId = -1;
@@ -25,14 +26,15 @@ d3.json("/data", function(error, news) {
 	console.log(data)
     createIndexesDict()
 	makelist();
-    makeSly();  
+    makeSly();
+    createImagesFrames();  
 	//createStories();
 });
 }
 
 
 function makeSly() {
-    frame = new Sly('#frame', {
+    frame = new Sly('#stories-frame', {
     slidee:     '#stories-list',  // Selector, DOM element, or jQuery object with DOM element representing SLIDEE.
     horizontal: true, // Switch to horizontal mode.
 
@@ -113,6 +115,91 @@ function createIndexesDict() {
     }
 }
 
+function createImagesFrames() {
+    var videoSection = document.getElementById("videos-section");
+    imagesFrames = {};
+    for(var i = 0; i<data.children.length; i++) {
+        imagesFrames[i] = {};
+        var videoSection = document.getElementById("videos-section");
+        var storyDiv = document.createElement('div');
+        storyDiv.setAttribute("id" , "story-videos-"+i);
+        storyDiv.setAttribute("class" , "story-videos");
+        videoSection.appendChild(storyDiv);
+
+        for (var j=0; j< data.children[i].segments.length; j++) {
+            var channel = data.children[i].segments[j].channel;
+            var videos = data.children[i].segments[j].videos;
+
+            var storyChannelDiv = document.createElement('div');
+            storyChannelDivId = "story-channel-videos-"+i+channel;
+            storyChannelDiv.setAttribute("id" , storyChannelDivId);
+            storyChannelDiv.setAttribute("class" , "story-channel-div");
+            storyDiv.appendChild(storyChannelDiv);
+
+            var h = document.createElement('h3');
+            h.appendChild(document.createTextNode(channelsDict[channel]));
+            storyChannelDiv.appendChild(h);
+
+            var imagesSliderFrame = document.createElement('div')
+            imagesSliderFrame.setAttribute("class", "frame image-slider");
+
+            var frameId = "images-slider-"+i+"-"+channel;
+            imagesSliderFrame.id = frameId;
+            var imagesList = document.createElement('ul');
+            imagesList.setAttribute("class", "slidee videos-slidee");
+            var slideeId = "images-slidee-"+i+"-"+channel;
+            imagesList.id = slideeId;
+            imagesSliderFrame.appendChild(imagesList);
+            storyChannelDiv.appendChild(imagesSliderFrame);
+
+            for (var k=0; k<videos.length; k++) {
+                var li = document.createElement('li');
+                var img = document.createElement('img');
+                img.src = data.children[i].segments[j].videos[k].thumbnail;
+                li.appendChild(img);
+                imagesList.appendChild(li);
+            }
+
+            var sly = new Sly('#'+frameId, {
+                slidee: '#'+slideeId,
+                horizontal: 1,
+                itemNav: 'forceCentered',
+                smart: 1,
+                activateMiddle: 1,
+                activateOn: 'click',
+                startAt: 0,
+                speed: 500}).init();
+
+            imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv};
+            storyChannelDiv.style.display = 'none';
+
+            // Add video in center
+            var centerVideo = document.createElement('div');
+            centerVideo.setAttribute("class", "col-centered");
+
+            var vidId = "video-player-"+i+"-"+channel
+            var vid = document.createElement('video');
+            vid.setAttribute("width", "100%");
+            vid.setAttribute("id", vidId);
+            centerVideo.appendChild(vid);
+            var source = document.createElement('source');
+            source.src = "http://um-bubble.media.mit.edu/static/1474027651430.http-um-bubble-media-mit-edu-10022-static-1474023834228-f1effc95-70a5-4b8f-9712-97514c13cb4f-mp4_nocom.mp4#t=336.37,821.00";//channels[j].videos[indexes[i][channel]].url;
+            source.type = "video/mp4";
+            vid.appendChild(source);
+
+            storyChannelDiv.appendChild(centerVideo);
+
+            //createVideo(vid, vidId, i, channelNum);
+
+            
+        }
+    }
+}
+
+function calculateContainerSize(slyObject){
+    slyObject.reload();
+}
+
 function makelist(array) {
     console.log("make list!")
     // Create the list element:
@@ -121,11 +208,10 @@ function makelist(array) {
     for(var i = 0; i < data.children.length; i++) {
         // Create the list item:
         var item = document.createElement('li');
+        item.setAttribute("class", "cluster");
         var funcCall = "selectedStory("+i+")";
         item.setAttribute("onclick", funcCall);
         p = document.createElement('div');
-
-
 
         // Set its contents:
         for (var j=0; j<data.children[i].words.length; j++) {
@@ -145,9 +231,22 @@ function makelist(array) {
 
 function selectedStory(i) {
   frame.activate(i); // Activates i-th element
-  emptyVidoesSection();
+  //emptyVidoesSection();
   var currStoryId = "story-videos-"+i;
-  addVideos(i)
+
+  for (var storyId in imagesFrames) {
+        for (var channel in imagesFrames[storyId]) {
+            imagesFrames[storyId][channel]["channelDiv"].style.display = 'none';
+        }
+   }
+
+  for (var channel in imagesFrames[i]) {
+        imagesFrames[i][channel]["channelDiv"].style.display = 'block';
+        calculateContainerSize(imagesFrames[i][channel]["sly"]);
+        //console.log(imagesFrames[i][channel]["sly"].pos);
+  }
+
+  //addVideos(i)
   //document.getElementById(currStoryId).style.display = 'block';
 
 }
@@ -156,10 +255,7 @@ Number.prototype.map = function (in_min, in_max, out_min, out_max) {
   return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-function emptyVidoesSection() {
-    // $( ".story-videos" ).each(function( index ) {
-    //     $(this).hide();
-    // });   
+function emptyVidoesSection() { 
 
     var videosSection = document.getElementById("videos-section");
     while (videosSection.firstChild) {
@@ -179,17 +275,34 @@ function addVideos(i) {
         var channelNum = channels[j].channel;
         var currDiv = document.createElement('div');
         currDiv.setAttribute("id", "videos-"+channelNum);
-        currDiv.setAttribute("class", "w3-display-container w3-col s4 col-centered");
+        currDiv.setAttribute("class", "w3-display-container w3-row");
+        //currDiv.setAttribute("style", "display:flex");
+        
+        //var videosLeft = document.createElement('div');
+        var centerVideo = document.createElement('div');
+       // var videosRight = document.createElement('div');
 
-        var h = document.createElement('h2');
+       var imagesSliderFrame = document.createElement('div')
+       imagesSliderFrame.setAttribute("class", "image-slider");
+       currDiv.appendChild(imagesSliderFrame);
+        addImages (imagesSliderFrame, channelNum, i);
+        //videosLeft.setAttribute("class", "w3-col m4 l4");
+        centerVideo.setAttribute("class", "col-centered");
+        //videosRight.setAttribute("class", "w3-col m4 l4");
+
+        //currDiv.appendChild(videosLeft);
+        currDiv.appendChild(centerVideo);
+        //currDiv.appendChild(videosRight);
+
+        var h = document.createElement('h3');
         h.appendChild(document.createTextNode(channelsDict[channelNum]));
         var vidId = "video-player-"+i+"-"+channelNum
         var vid = document.createElement('video');
-        vid.setAttribute("width", "96%");
+        vid.setAttribute("width", "100%");
         vid.setAttribute("id", vidId);
 
-        currDiv.appendChild(h);
-        currDiv.appendChild(vid);
+        centerVideo.appendChild(h);
+        centerVideo.appendChild(vid);
         storyDiv.appendChild(currDiv);
 
         var source = document.createElement('source');
@@ -200,6 +313,29 @@ function addVideos(i) {
 
         createVideo(vid, vidId, i, channelNum);
     }
+}
+
+function addImages(frame, channel, storyIndex) {
+    var videosList = getVideosList(storyIndex, channel);
+    var currIndex  = indexes[storyIndex][channel];
+    var frameId = "images-slider-"+storyIndex+"-"+channel;
+    frame.id = ("frameId");
+    var imagesList = document.createElement('ul');
+    imagesList.setAttribute("class", "slidee");
+    var slideeId = "images-slidee-"+storyIndex+"-"+channel;
+    frame.appendChild(imagesList)
+
+    for (var i=0; i<videosList.length; i++) {
+        var li = document.createElement('li');
+        var img = document.createElement('img');
+        img.src = "http://placekitten.com/300/300/";
+        li.appendChild(img);
+        imagesList.appendChild(li);
+    }
+    // var imagesFrame = new Sly('#'+frameId, {
+    // slidee: '#'+slideeId,
+    // horizontal: true,
+    // itemNav: 'forceCentered'}).init();
 }
 
 var channelsDict = {
@@ -230,7 +366,7 @@ var channelsDict = {
 '206':'ESPNHD',
 }
 
-function createVideo(video, videoId, storyIdnex, channel) {
+function createVideo(video, videoId, storyIndex, channel) {
   video.setAttribute("poster","data:image/gif,AAAA");
   video.setAttribute("class","loading");
 
@@ -251,55 +387,61 @@ function createVideo(video, videoId, storyIdnex, channel) {
 
   var parentDiv = video.parentNode;
 
-  var height = parentDiv.clientHeight;
-  parentDiv.setAttribute("style", "height:"+height+"px;");
+  var videoDate = document.createElement('div');
+  videoDate.id = (videoId+"-date");
+  var unixDate = getVideosList(storyIndex, channel)[indexes[storyIndex][channel]].date
+  videoDate.appendChild(document.createTextNode(timeConverter(unixDate)));
+  parentDiv.insertBefore(videoDate, video);
 
-  var playButton = document.createElement('a');
-  playButton.id = videoId+"play-pause";
-  playButton.setAttribute("class", "w3-btn-floating w3-dark-grey");
-  playButton.appendChild(document.createTextNode('►'));
-  parentDiv.appendChild(playButton);
+  // var height = parentDiv.clientHeight;
+  // parentDiv.setAttribute("style", "height:"+height+"px;");
 
-  playButton.addEventListener("click", function() {
-  if (video.paused == true) {
-    // Play the video
-    video.play();
-    // Update the button text to 'Pause'
-    playButton.innerHTML = "❚❚";
-  } else {
-    // Pause the video
-    video.pause();
-    // Update the button text to 'Play'
-    playButton.innerHTML = "►";
-    }
-    });
-  video.addEventListener('paused', function() {
-    playButton.innerHTML = "►";
-   }, false);
-   video.addEventListener('ended', function() {
-    playButton.innerHTML = "►";
-   }, false);
+  // var playButton = document.createElement('a');
+  // playButton.id = videoId+"play-pause";
+  // playButton.setAttribute("class", "w3-btn-floating w3-dark-grey");
+  // playButton.appendChild(document.createTextNode('►'));
+  // parentDiv.appendChild(playButton);
+
+  // playButton.addEventListener("click", function() {
+  // if (video.paused == true) {
+  //   // Play the video
+  //   video.play();
+  //   // Update the button text to 'Pause'
+  //   playButton.innerHTML = "❚❚";
+  // } else {
+  //   // Pause the video
+  //   video.pause();
+  //   // Update the button text to 'Play'
+  //   playButton.innerHTML = "►";
+  //   }
+  //   });
+  // video.addEventListener('paused', function() {
+  //   playButton.innerHTML = "►";
+  //  }, false);
+  //  video.addEventListener('ended', function() {
+  //   playButton.innerHTML = "►";
+  //  }, false);
 
 
-  var prevButton=document.createElement('a');
-  prevButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomleft");
-  prevButton.setAttribute("style", "left:3%");
-  var funcCall = "changeSrc(-1,"+storyIdnex+",'"+channel+"')";
-  prevButton.setAttribute("onclick", funcCall);
-  prevButton.id = videoId+"-prev-button";
-  prevButton.appendChild(document.createTextNode('❮'));
+  // var prevButton=document.createElement('a');
+  // prevButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomleft");
+  // prevButton.setAttribute("style", "left:3%");
+  // var funcCall = "changeSrc(-1,"+storyIndex+",'"+channel+"')";
+  // prevButton.setAttribute("onclick", funcCall);
+  // prevButton.id = videoId+"-prev-button";
+  // prevButton.appendChild(document.createTextNode('❮'));
 
-  var nextButton=document.createElement('a');
-  nextButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomright");
-  nextButton.setAttribute("style", "right:3%");
-  var funcCall = "changeSrc(+1,"+storyIdnex+",'"+channel+"')";
-  nextButton.setAttribute("onclick", funcCall);
-  nextButton.id = videoId+"-next-button";
-  nextButton.appendChild(document.createTextNode('❯'));
-  parentDiv.appendChild(prevButton);
-  parentDiv.appendChild(nextButton);
+  // var nextButton=document.createElement('a');
+  // nextButton.setAttribute("class", "w3-btn-floating w3-dark-grey w3-display-bottomright");
+  // nextButton.setAttribute("style", "right:3%");
+  // var funcCall = "changeSrc(+1,"+storyIndex+",'"+channel+"')";
+  // nextButton.setAttribute("onclick", funcCall);
+  // nextButton.id = videoId+"-next-button";
+  // nextButton.appendChild(document.createTextNode('❯'));
+  // parentDiv.appendChild(prevButton);
+  // parentDiv.appendChild(nextButton);
 
-  buttonsStatus(prevButton, nextButton, channel, storyIdnex)
+  // buttonsStatus(prevButton, nextButton, channel, storyIndex)
 
 }
 
@@ -309,6 +451,10 @@ function changeSrc(move, storyIndex, channel) {
     var ind = indexes[storyIndex][channel]
     var newSrc = getVideosList(storyIndex, channel)[indexes[storyIndex][channel]].url;
     var vid = document.getElementById("video-player-"+storyIndex+"-"+channel);
+
+    var unixDate = getVideosList(storyIndex, channel)[indexes[storyIndex][channel]].date
+    var videoDate = document.getElementById("video-player-"+storyIndex+"-"+channel+"-date");
+    videoDate.innerHTML = (timeConverter(unixDate));
     vid.pause();
 
     //clean source
@@ -333,15 +479,15 @@ function changeSrc(move, storyIndex, channel) {
     playButton.innerHTML = "►";
 }
 
-function buttonsStatus(prevButton, nextButton, channel, storyIdnex) {
-    if (indexes[storyIdnex][channel]==0) {
+function buttonsStatus(prevButton, nextButton, channel, storyIndex) {
+    if (indexes[storyIndex][channel]==0) {
         prevButton.classList.add("w3-disabled");
     }
     else {
         prevButton.classList.remove("w3-disabled");
     }
-    var videosList = getVideosList(storyIdnex, channel);
-    if (indexes[storyIdnex][channel]+1>=videosList.length) {
+    var videosList = getVideosList(storyIndex, channel);
+    if (indexes[storyIndex][channel]+1>=videosList.length) {
         nextButton.classList.add("w3-disabled");
     }
     else {
@@ -358,10 +504,19 @@ function getVideosList(storyIndex, channel) {
     return [];
 }
 
-// $('video').hover(function toggleControls() {
-//     if (this.hasAttribute("controls")) {
-//         this.removeAttribute("controls")
-//     } else {
-//         this.setAttribute("controls", "controls")
-//     }
-// })
+function timeConverter(dtstr){
+  //EST
+  offset = -5.0
+  
+  var a = new Date(dtstr+ (3600000*offset));
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' +  ("0" + hour).slice(-2) + ":" + ("0" + min).slice(-2);
+  return time;
+}
+
