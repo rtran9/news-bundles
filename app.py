@@ -23,7 +23,7 @@ def initialize():
     scheduler = BackgroundScheduler()
     print_date_time()
     print("initializing app")
-    scheduler.add_job(cache_data, 'interval', hours=1, replace_existing=True)
+    scheduler.add_job(cache_data, 'interval', hours=2, replace_existing=True)
     scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     print("starting scheduler")
     scheduler.start()
@@ -57,4 +57,4 @@ def get_now_data():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=3000)
+    app.run(debug=True)

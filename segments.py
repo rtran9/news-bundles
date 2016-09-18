@@ -41,7 +41,7 @@ def get_texts(media):
         text = ""
         seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
         text = " ".join(seg_caps)
-        url = "%s#t=%.2f,%.2f"%(media[media_url],start/1000.0,end/1000)
+        url = "%s#t=%.2f,%.2f"%(media[media_url],start/1000.0,end/1000.0)
         air_date = media["date_added"]
         length = float(end)-float(start)
         temp_name = file_name(url)
@@ -143,7 +143,7 @@ def run_lda(all_segments, seg_texts_processed):
             })
         # else:
         #     print topic
-    topics_to_return = 16 if n_topics>30 else 9
+    topics_to_return = 16 #if n_topics>30 else 9
     return {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
             'vocab_size':len(vocab)}
 
