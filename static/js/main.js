@@ -358,7 +358,7 @@ function getVideosList(storyIndex, channel) {
 
 function timeConverter(dtstr){
   //EST
-  offset = -5.0
+  offset = 0//-5.0
   
   var a = new Date(dtstr+ (3600000*offset));
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
