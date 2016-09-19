@@ -162,7 +162,7 @@ function createImagesFrames() {
                 var img = document.createElement('img');
                 img.src = data.children[i].segments[j].videos[k].thumbnail;
                 li.appendChild(img);
-                var funcCall = "imageClicked("+i+","+channel+","+k+")";
+                var funcCall = "imageClicked("+i+", '"+channel+"',"+k+")";
                 li.setAttribute("onclick", funcCall);
                 imagesList.appendChild(li);
             }
@@ -242,11 +242,10 @@ function createVideoElement (storyIndex, channel) {
     if (Math.abs(currTime - videoEndTime)<0.5) {
       console.log("ended, moving to next");
       if (getVideosList(storyIndex,channel).length > currVidIndex) {
+        console.log("on pause channle: "+channel);
         imageClicked (storyIndex, channel, currVidIndex+1);
     }
     }
-    console.log("curr time: "+currTime);
-    console.log("end time: "+videoEndTime);
   };
   return centerVideo;
 }
@@ -308,7 +307,6 @@ function selectedStory(i) {
 
 function imageClicked (storyIndex, channel, videoId) {
   indexes[storyIndex][channel] = videoId;
-  console.log("storyIndex: "+storyIndex+" channel: "+channel+" videoId: "+videoId)
   var currSly = imagesFrames[storyIndex][channel]["sly"]
   var currVideo = getVideosList(storyIndex, channel)[videoId]
   currSly.activate(videoId);
