@@ -8,6 +8,19 @@ window.setTimeout(function(){
 location.reload();
 },3600000);
 
+function doResize()
+{
+    // FONT SIZE
+    var ww = $('body').width();
+    var maxW = $('body').width();//[your design max-width here];
+    ww = Math.min(ww, maxW);
+    var fw = ww*(10/maxW);
+    var fpc = fw*100/16;
+    var fpc = Math.round(fpc*100)/100;
+    $('html').css('font-size',fpc+'%');
+
+}
+
 var data;
 var frame;
 var imageFrames;
@@ -16,6 +29,7 @@ var gridOn = true;
 var showId = -1;
 $(function() {
   console.log('jquery is working!');
+  doResize();
   getData();
 });
 
@@ -271,7 +285,7 @@ function makelist(array) {
         for (var j=0; j<data.children[i].words.length; j++) {
             word = data.children[i].words[j];
             w = document.createElement('div');
-            fontSize = "font-size:"+word.size.map(0, data.vocab_size, 12,21)+"px;";
+            fontSize = "font-size:"+word.size.map(0, data.vocab_size, 0.5,2.5)+"em;";
             w.setAttribute("style", fontSize);
             w.appendChild(document.createTextNode(word.text));
             p.appendChild(w);
