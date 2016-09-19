@@ -29,7 +29,7 @@ var gridOn = true;
 var showId = -1;
 $(function() {
   console.log('jquery is working!');
-  doResize();
+  //doResize();
   getData();
 });
 
