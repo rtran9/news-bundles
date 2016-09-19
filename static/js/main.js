@@ -177,11 +177,12 @@ function createImagesFrames() {
                 startAt: 0,
                 speed: 500}).init();
 
+            imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date};
+            storyChannelDiv.style.display = 'none';
+
             var videoElement = createVideoElement (i, channel);
 
             storyChannelDiv.appendChild(videoElement);
-            imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date, "video": videoElement};
-            storyChannelDiv.style.display = 'none';
 
             //createVideo(vid, vidId, i, channelNum);
 
@@ -307,6 +308,7 @@ function selectedStory(i) {
 
 function imageClicked (storyIndex, channel, videoId) {
   indexes[storyIndex][channel] = videoId;
+  console.log("storyIndex: "+storyIndex+" channel: "+channel+" videoId: "+videoId)
   var currSly = imagesFrames[storyIndex][channel]["sly"]
   var currVideo = getVideosList(storyIndex, channel)[videoId]
   currSly.activate(videoId);
@@ -358,7 +360,7 @@ function getVideosList(storyIndex, channel) {
 
 function timeConverter(dtstr){
   //EST
-  offset = 0//-5.0
+  offset = 0;//-5.0
   
   var a = new Date(dtstr+ (3600000*offset));
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
