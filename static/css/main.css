@@ -1,26 +1,23 @@
 /* custom css */
 
 html {
-  font-size: 0.65vw;
+  font-size: 0.55vw;
 }
 
 body {
     background-color: #e8e8e8;
-    font-family: 'Roboto Slab', serif;
+    font-family:'Montserrat', sans-serif;
+/*    font-family: 'Roboto Slab', serif;*/
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Roboto Slab', serif;
+    font-family:'Montserrat', sans-serif;
+/*    font-family: 'Roboto Slab', serif;*/
     margin: auto;
 }
 
 .area {
   fill: #e7e7e7;
-}
-
-.cluster-title {
-	font-family: 'Slabo 50px', serif;
-	color: #6666cc;
 }
 
 #stories-list{
@@ -29,34 +26,39 @@ h1, h2, h3, h4, h5, h6 {
 
 #stories-frame {
     z-index: 4;
-    background-color:#94b8b8;
+    background-color:#e8e8e8;
     position:fixed;
     top:0;
    left:0;
    width:100%;
-   height:12.5vw;
+   height:10.5vw;
    padding-top: 0.25vw;
    padding-bottom: 0.25vw;
 }
 
 #videos-section {
-    margin-top: 12.5vw;
+    margin-top: 11.5vw;
 }
 
 /*li {
 	color:"black";
 }*/
 
+.cluster-title {
+    font-family:'Montserrat', sans-serif;
+    color: #333;
+}
+
 .cluster {
-    background-color: #333;
+    background-color: white;
 }
 
 .cluster:hover {
-    background-color: #777;
+    background-color: #f2f2f2;
 }
 
 .cluster.active {
-    background-color: #666;
+    background-color: #e6e6e6;
 }
 
 .frame { width: 100%; height: 12.5vw; padding: 0; }
@@ -75,21 +77,30 @@ h1, h2, h3, h4, h5, h6 {
 /*.frame .slidee li:hover {
     background-color: #777;
 }*/
+.story-channel-div {
+    width:100%;
+    overflow: hidden;
+}
 
+.frame.image-slider .slidee li {
+    width:3vw;
+}
 .slidee.videos-slidee li.active {
-    width:14vw;
+    width:4vw;
 }
 
 .slidee.videos-slidee li.active img{
-  visibility: hidden;
-  opacity: 0;
+    width:4vw;
+    opacity: 1;
 }
 
 
+
 .frame.image-slider { 
-    height: 9vw; 
+    height: 4vw; 
     padding: 0; 
-    border-bottom: 1px solid #ccc;
+    position: relative;
+    clear:both;
 }
 
 .helper {
@@ -110,7 +121,7 @@ h1, h2, h3, h4, h5, h6 {
     right: 0;  
     margin: auto;
     visibility: visible;
-    opacity: 1;
+    opacity: 0.7;
     transition: visibility 0.6s, opacity 0.4s linear;
 }
 
@@ -118,23 +129,8 @@ h1, h2, h3, h4, h5, h6 {
 .frame .slidee li div {
     font-weight: 100;
     font-style: normal;
-    color: white;
+    color: #404040;
 
-}
-
-
-.scrollbar {
-    width:100%;
-    margin: 0 0 1em 0;
-    height: 3px;
-    background: #ccc;
-    line-height: 0;
-}
-.scrollbar .handle {
-    width: 5vw; /* overriden if dynamicHandle: 1 */
-    height: 100%;
-    background: #222;
-    cursor: pointer;
 }
 
 /* centered columns styles */
@@ -163,22 +159,6 @@ video.loading {
   background-size: 50%, auto;
 }
 
-.w3-disabled {
-    cursor: default;
-}
-
-.images-row {
-width: 100%;
-overflow: hidden;
-white-space: nowrap;
-position:absolute;
-top: 35%;
-text-align: left;
-    
-}
-
-.images-row img {display: inline-block; margin: auto 30px;}
-
 #stories-frame { 
 /*    position:fixed;
     top:20px;
@@ -189,3 +169,30 @@ text-align: left;
     margin:auto;*/
 
     }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+table td, table th {
+  border: 1px solid #ccc;
+  height: 18vw;
+  width: 33vw;
+  max-width: 33vw;
+  max-height: 18vw;
+}
+table tr:first-child td {
+  border-top: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}

@@ -135,10 +135,10 @@ function createImagesFrames() {
     for(var i = 0; i<data.children.length; i++) {
         imagesFrames[i] = {};
         var videoSection = document.getElementById("videos-section");
-        var storyDiv = document.createElement('div');
-        storyDiv.setAttribute("id" , "story-videos-"+i);
-        storyDiv.setAttribute("class" , "story-videos");
-        videoSection.appendChild(storyDiv);
+        // var storyDiv = document.createElement('div');
+        // storyDiv.setAttribute("id" , "story-videos-"+i);
+        // storyDiv.setAttribute("class" , "story-videos");
+        // videoSection.appendChild(storyDiv);
 
         for (var j=0; j< data.children[i].segments.length; j++) {
             var channel = data.children[i].segments[j].channel;
@@ -147,8 +147,9 @@ function createImagesFrames() {
             var storyChannelDiv = document.createElement('div');
             storyChannelDivId = "story-channel-videos-"+i+channel;
             storyChannelDiv.setAttribute("id" , storyChannelDivId);
-            storyChannelDiv.setAttribute("class" , "story-channel-div");
-            storyDiv.appendChild(storyChannelDiv);
+            storyChannelDiv.setAttribute("class" , "story-channel-div story-channel-div-"+i);
+            varTableLocation = document.getElementById("video-"+j);
+            varTableLocation.appendChild(storyChannelDiv);
 
             var h = document.createElement('h3');
             h.appendChild(document.createTextNode(channelsDict[channel]));
@@ -158,6 +159,11 @@ function createImagesFrames() {
             var unixDate = data.children[i].segments[j].videos[0].date;
             date.appendChild(document.createTextNode(timeConverter(unixDate)));
             storyChannelDiv.appendChild(date);
+
+
+            var videoElement = createVideoElement (i, channel);
+
+            storyChannelDiv.appendChild(videoElement);
 
             var imagesSliderFrame = document.createElement('div')
             imagesSliderFrame.setAttribute("class", "frame image-slider");
@@ -181,46 +187,20 @@ function createImagesFrames() {
                 imagesList.appendChild(li);
             }
 
-             var sly = new Sly($('#'+frameId),{
-                horizontal: 1,
-                itemNav: 'basic',
-                activateOn: 'click',
-                mouseDragging: 1,
-                touchDragging : 1,
-                releaseSwing  : 1,
-                scrollBy      : 1,
-                startAt       : 0,
-                speed: 300,
-                elasticBounds : 1,
-                dragHandle    : 1,
-                dynamicHandle : 1,
-                clickBar      : 1,
-                activeClass: 'active',
-            })
-
-
             var sly = new Sly('#'+frameId, {
                 slidee: '#'+slideeId,
                   horizontal: 1,
-                  itemNav: 'basic',
+                  itemNav: 'forceCentered',
                   activateOn: 'click',
-                  mouseDragging: 1,
+                  mouseDragging: 0,
                   startAt: 0,
                   speed: 300,
                   activeClass: 'active'});
 
             sly.init();
 
-            calculateContainerSize(sly);
-
             imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date};
             storyChannelDiv.style.display = 'none';
-
-            var videoElement = createVideoElement (i, channel);
-
-            storyChannelDiv.appendChild(videoElement);
-
-
             
         }
     }
@@ -229,11 +209,11 @@ function createImagesFrames() {
 function createVideoElement (storyIndex, channel) {
   // Add video in center
   var centerVideo = document.createElement('div');
-  centerVideo.setAttribute("class", "col-centered");
+  //centerVideo.setAttribute("class", "col-centered");
 
   var vidId = "video-player-"+storyIndex+"-"+channel
   var vid = document.createElement('video');
-  vid.setAttribute("width", "100%");
+  vid.setAttribute("width", "75%");
   vid.setAttribute("id", vidId);
   vid.setAttribute("preload", "metadata");
   centerVideo.appendChild(vid);
@@ -255,12 +235,12 @@ function createVideoElement (storyIndex, channel) {
   vid.addEventListener('mouseout', function() { this.controls = false; }, false);
 
   centerVideo.addEventListener("click", function() {
-    if (vid.paused == true) {
+    if (vid.muted === false) {
     // Play the video
-    vid.play();
+    vid.muted = true;
     } else {
     // Pause the video
-    vid.pause();
+    vid.muted = false;
     }
     });
 
@@ -276,7 +256,10 @@ function createVideoElement (storyIndex, channel) {
       if (getVideosList(storyIndex,channel).length > currVidIndex) {
         console.log("on pause channle: "+channel);
         imageClicked (storyIndex, channel, currVidIndex+1);
-    }
+      }
+      else {
+        imageClicked (storyIndex, channel, 0);
+      }
     }
   };
   return centerVideo;
@@ -310,6 +293,7 @@ function makelist(array) {
             w.setAttribute("style", fontSize);
             w.appendChild(document.createTextNode(word.text));
             p.appendChild(w);
+            p.setAttribute("class", "cluster-title")
 
         }
         item.appendChild(p);
@@ -322,19 +306,28 @@ function selectedStory(i) {
   frame.activate(i); // Activates i-th element
   var currStoryId = "story-videos-"+i;
 
-  for (var storyId in imagesFrames) {
-        for (var channel in imagesFrames[storyId]) {
-            imagesFrames[storyId][channel]["channelDiv"].style.display = 'none';
-        }
-   }
+  $(".story-channel-div").hide();
+  $(".story-channel-div-"+i).show();
 
-  for (var channel in imagesFrames[i]) {
-        imagesFrames[i][channel]["channelDiv"].style.display = 'block';
-  }
+  // for (var storyId in imagesFrames) {
+  //       for (var channel in imagesFrames[storyId]) {
+  //           imagesFrames[storyId][channel]["channelDiv"].style.display = 'none';
+  //       }
+  //  }
+
+  // for (var channel in imagesFrames[i]) {
+  //       imagesFrames[i][channel]["channelDiv"].style.display = 'block';
+  // }
 
   // in case any video is playing - pause all videos
   $("video").each(function(){
     $(this).get(0).pause();
+    $(this).get(0).muted = true;
+  });
+
+
+  $(".story-channel-div-"+i+" video").each(function(){
+    $(this).get(0).play();
   });
 }
 
@@ -343,8 +336,8 @@ function imageClicked (storyIndex, channel, videoId) {
   var currSly = imagesFrames[storyIndex][channel]["sly"]
   var currVideo = getVideosList(storyIndex, channel)[videoId]
   currSly.activate(videoId);
-  currSly.toStart(videoId);
-  calculateContainerSize(currSly)
+  currSly.reload(videoId);
+  currSly.toCenter(videoId);
 
   changeSrc(videoId, storyIndex, channel)
 
