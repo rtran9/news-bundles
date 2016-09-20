@@ -85,10 +85,11 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0;
 }
 
+
 .frame.image-slider { 
     height: 9vw; 
     padding: 0; 
-/*    margin-top: 1em; */
+    border-bottom: 1px solid #ccc;
 }
 
 .helper {
@@ -151,9 +152,9 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 2;
     position: absolute; 
     top: 50%;  /* position the top  edge of the element at the middle of the parent */
-    left: 50%; /* position the left edge of the element at the middle of the parent */
+    /*left: 50%; *//* position the left edge of the element at the middle of the parent */
 
-    transform: translate(-50%, -50%); /* This is a shorthand of
+    transform: translate(0%, -50%); /* This is a shorthand of
                                          translateX(-50%) and translateY(-50%) */
 
 }

@@ -131,13 +131,14 @@ def run_lda(all_segments, seg_texts_processed):
         #print topic + " - " + str(len(clusters[i]))
         channels = list(set([seg["channel"] for seg in clusters[i] ]))
         segs_by_channel = [{"channel":channel,"videos":sorted([segm for segm in clusters[i] if segm["channel"]==channel],key=lambda x:x["date"])} for channel in channels]
+        sorted_segs_by_channel = sorted(segs_by_channel, key=lambda x:len(x["videos"]), reverse=True)
         words = [{"text":word, "size":vocab.index(word)} for word in topic.split('-')]
         # if len(segs_by_channel)>1:
         results.append({
             'id':i,
             'summary':topic,
             'value':len(clusters[i]),
-            'segments':segs_by_channel,
+            'segments':sorted_segs_by_channel,
             'images':[],
             'words':words
             })

@@ -37,8 +37,8 @@ function getData() {
 d3.json("/data", function(error, news) {
 	data = news;
 	console.log("done getting data")
-	console.log(data)
-  createIndexesDict()
+	console.log(data);
+  createIndexesDict();
 	makelist();
   makeSly();
   createImagesFrames();  
@@ -181,15 +181,37 @@ function createImagesFrames() {
                 imagesList.appendChild(li);
             }
 
+             var sly = new Sly($('#'+frameId),{
+                horizontal: 1,
+                itemNav: 'basic',
+                activateOn: 'click',
+                mouseDragging: 1,
+                touchDragging : 1,
+                releaseSwing  : 1,
+                scrollBy      : 1,
+                startAt       : 0,
+                speed: 300,
+                elasticBounds : 1,
+                dragHandle    : 1,
+                dynamicHandle : 1,
+                clickBar      : 1,
+                activeClass: 'active',
+            })
+
+
             var sly = new Sly('#'+frameId, {
                 slidee: '#'+slideeId,
-                horizontal: 1,
-                itemNav: 'forceCentered',
-                smart: 1,
-                activateMiddle: 1,
-                activateOn: 'click',
-                startAt: 0,
-                speed: 500}).init();
+                  horizontal: 1,
+                  itemNav: 'basic',
+                  activateOn: 'click',
+                  mouseDragging: 1,
+                  startAt: 0,
+                  speed: 300,
+                  activeClass: 'active'});
+
+            sly.init();
+
+            calculateContainerSize(sly);
 
             imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date};
             storyChannelDiv.style.display = 'none';
@@ -198,7 +220,6 @@ function createImagesFrames() {
 
             storyChannelDiv.appendChild(videoElement);
 
-            //createVideo(vid, vidId, i, channelNum);
 
             
         }
@@ -228,9 +249,6 @@ function createVideoElement (storyIndex, channel) {
     console.log("video loaded!")
     vid.setAttribute("poster","");
     vid.classList.remove("loading");
-  };
-  vid.onloadstart = function() {
-    console.log(vidId+" starting to load video");
   };
 
   vid.addEventListener('mouseover', function() { this.controls = true; }, false);
@@ -265,7 +283,10 @@ function createVideoElement (storyIndex, channel) {
 }
 
 function calculateContainerSize(slyObject){
-    slyObject.reload();
+    //slyObject.reload();
+    var itemWidth = $('.videos-slidee li').width();
+    slyObject.pos.end += $(slyObject.frame).width() - itemWidth; // = frame size - item size
+
 }
 
 function makelist(array) {
@@ -309,8 +330,6 @@ function selectedStory(i) {
 
   for (var channel in imagesFrames[i]) {
         imagesFrames[i][channel]["channelDiv"].style.display = 'block';
-        calculateContainerSize(imagesFrames[i][channel]["sly"]);
-        //console.log(imagesFrames[i][channel]["sly"].pos);
   }
 
   // in case any video is playing - pause all videos
@@ -324,7 +343,8 @@ function imageClicked (storyIndex, channel, videoId) {
   var currSly = imagesFrames[storyIndex][channel]["sly"]
   var currVideo = getVideosList(storyIndex, channel)[videoId]
   currSly.activate(videoId);
-  currSly.reload();
+  currSly.toStart(videoId);
+  calculateContainerSize(currSly)
 
   changeSrc(videoId, storyIndex, channel)
 
