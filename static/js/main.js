@@ -198,7 +198,7 @@ function createImagesFrames() {
                   activeClass: 'active'});
 
             sly.init();
-
+            
             imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date};
             storyChannelDiv.style.display = 'none';
             
@@ -265,12 +265,12 @@ function createVideoElement (storyIndex, channel) {
   return centerVideo;
 }
 
-function calculateContainerSize(slyObject){
-    //slyObject.reload();
-    var itemWidth = $('.videos-slidee li').width();
-    slyObject.pos.end += $(slyObject.frame).width() - itemWidth; // = frame size - item size
+// function calculateContainerSize(slyObject){
+//     //slyObject.reload();
+//     var itemWidth = $('.videos-slidee li').width();
+//     slyObject.pos.end += $(slyObject.frame).width() - itemWidth; // = frame size - item size
 
-}
+// }
 
 function makelist(array) {
     console.log("make list!")
@@ -316,7 +316,7 @@ function selectedStory(i) {
   //  }
 
   // for (var channel in imagesFrames[i]) {
-  //       imagesFrames[i][channel]["channelDiv"].style.display = 'block';
+  //       imagesFrames[i][channel]["sly"].reload();
   // }
 
   // in case any video is playing - pause all videos
@@ -336,7 +336,7 @@ function imageClicked (storyIndex, channel, videoId) {
   var currSly = imagesFrames[storyIndex][channel]["sly"]
   var currVideo = getVideosList(storyIndex, channel)[videoId]
   currSly.activate(videoId);
-  currSly.reload(videoId);
+  currSly.reload();
   currSly.toCenter(videoId);
 
   changeSrc(videoId, storyIndex, channel)
