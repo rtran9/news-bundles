@@ -62,7 +62,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .frame { width: 100%; height: 12.5vw; padding: 0; }
-.frame .slidee { margin: 0; padding: 0; height: 100%; list-style: none; }
+.frame .slidee { 
+    margin: 0; 
+    padding: 0; 
+    height: 100%; 
+    list-style: none; 
+    width:100% !important;
+}
+
 .frame .slidee li { 
     float: left; 
     text-align: center;
@@ -89,9 +96,7 @@ h1, h2, h3, h4, h5, h6 {
     width:4vw;
 }
 
-.slidee{
-    width:100% !important;
-}
+
 
 
 .slidee.videos-slidee li.active img{
