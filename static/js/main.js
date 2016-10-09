@@ -148,22 +148,32 @@ function createImagesFrames() {
             storyChannelDivId = "story-channel-videos-"+i+channel;
             storyChannelDiv.setAttribute("id" , storyChannelDivId);
             storyChannelDiv.setAttribute("class" , "story-channel-div story-channel-div-"+i);
-            varTableLocation = document.getElementById("video-"+j);
-            varTableLocation.appendChild(storyChannelDiv);
+            var tableLocation = document.getElementById("video-"+j);
+            tableLocation.appendChild(storyChannelDiv);
 
-            var h = document.createElement('h3');
-            h.appendChild(document.createTextNode(channelsDict[channel]));
-            storyChannelDiv.appendChild(h);
+            // var h = document.createElement('h3');
+            // h.appendChild(document.createTextNode(channelsDict[channel][0]));
+            // storyChannelDiv.appendChild(h);
+
+            var img = new Image();
+            img.setAttribute("class", "channel-logo")
+            img.src = 'static/images/'+channelsDict[channel][1];
+            storyChannelDiv.appendChild(img);
+
+
+
+            var videoDivTemp = document.createElement('div');
+            storyChannelDiv.appendChild(videoDivTemp);
+
+            var videoElement = createVideoElement (i, channel);
+            videoDivTemp.appendChild(videoElement);
 
             var date = document.createElement('span');
             var unixDate = data.children[i].segments[j].videos[0].date;
             date.appendChild(document.createTextNode(timeConverter(unixDate)));
+            date.setAttribute("class", "video-date")
             storyChannelDiv.appendChild(date);
-
-
-            var videoElement = createVideoElement (i, channel);
-
-            storyChannelDiv.appendChild(videoElement);
+            
 
             var imagesSliderFrame = document.createElement('div')
             imagesSliderFrame.setAttribute("class", "frame image-slider");
@@ -209,11 +219,12 @@ function createImagesFrames() {
 function createVideoElement (storyIndex, channel) {
   // Add video in center
   var centerVideo = document.createElement('div');
+  centerVideo.setAttribute("class", "video-container")
   //centerVideo.setAttribute("class", "col-centered");
 
   var vidId = "video-player-"+storyIndex+"-"+channel
   var vid = document.createElement('video');
-  vid.setAttribute("width", "75%");
+  vid.setAttribute("width", "72%");
   vid.setAttribute("id", vidId);
   vid.setAttribute("preload", "metadata");
   centerVideo.appendChild(vid);
@@ -284,21 +295,29 @@ function makelist(array) {
         var funcCall = "selectedStory("+i+")";
         item.setAttribute("onclick", funcCall);
         p = document.createElement('div');
+        p.setAttribute("class", "cluster-title")
+
+        // Add it to the list:
+        list.appendChild(item);
+
+        itemWidth = item.getBoundingClientRect().width;
+        item.appendChild(p);
 
         // Set its contents:
         for (var j=0; j<data.children[i].words.length; j++) {
             word = data.children[i].words[j];
             w = document.createElement('div');
-            fontSize = "font-size:"+word.size.map(0, data.vocab_size, 0.5,2.5)+"em;";
-            w.setAttribute("style", fontSize);
+            
+            var emFontSize = word.size.map(0, data.vocab_size, 0.6,2.5);
+            wordWidth = word.text.width(emFontSize+'em Montserrat');
+            while (wordWidth>itemWidth) {
+              emFontSize-=0.1;
+              wordWidth = word.text.width(emFontSize+'em Montserrat');
+            }
+            w.setAttribute("style", "font-size:"+emFontSize+"em;");
             w.appendChild(document.createTextNode(word.text));
             p.appendChild(w);
-            p.setAttribute("class", "cluster-title")
-
         }
-        item.appendChild(p);
-        // Add it to the list:
-        list.appendChild(item);
     }
 }
 
@@ -400,30 +419,41 @@ function timeConverter(dtstr){
 }
 
 var channelsDict = {
-'284':'SCIHD',  
-'229':'HGTV', 
-'232':'COOKHD',
-'276':'NGCHD',
-'264':'BBCAHD',
-'278':'DSCHD',    
-'237':'BRVOHD',
-'242':'USAHD',    
-'231':'FOODHD',   
-'244':'SyFyHD',   
-'375':'LINK',   
-'025':'WFXT',   
-'351':'CSP2',   
-'002':'WGBH',   
-'353':'BTV',    
-'249':'COMHD',    
-'357':'CNBW', 
-'347':'MSNB', 
-'202':'CNN',    
-'355':'CNBC', 
-'350':'CSP1',   
-'360':'FOX NEWS', 
-'356':'MNBC', 
-'349':'NEWSX',    
-'206':'ESPNHD',
+'284':['SCIHD',''],  
+'229':['HGTV', ''], 
+'232':['COOKHD', ''],
+'276':['NGCHD', ''],
+'264':['BBCAHD', ''],
+'278':['DSCHD', ''],    
+'237':['BRVOHD', ''],
+'242':['USAHD', ''],    
+'231':['FOODHD', ''],   
+'244':['SyFyHD', ''],   
+'375':['LINK', ''],   
+'025':['WFXT', 'wtfx.png'],   
+'351':['CSP2', ''],   
+'002':['WGBH', ''],   
+'353':['BTV', ''],    
+'249':['COMHD', ''],    
+'357':['CNBW', ''], 
+'347':['MSNB', 'msnbc1.png'], 
+'202':['CNN', 'cnn.png'],    
+'355':['CNBC', 'cnbc.png'], 
+'350':['CSP1', ''],   
+'360':['FOX NEWS', 'fxc.png'], 
+'356':['MNBC', 'msnbc1.png'], 
+'349':['NEWSX', ''],    
+'206':['ESPNHD', ''],
 }
 
+String.prototype.width = function(font) {
+  var f = font || '12px arial',
+      o = $('<div>' + this + '</div>')
+            .css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden', 'font': f})
+            .appendTo($('body')),
+      w = o.width();
+
+  o.remove();
+
+  return w;
+}
