@@ -308,7 +308,7 @@ function makelist(array) {
             word = data.children[i].words[j];
             w = document.createElement('div');
             
-            var emFontSize = word.size.map(0, data.vocab_size, 0.6,2.5);
+            var emFontSize = word.size.map(0, data.vocab_size, 0.5,2.5);
             wordWidth = word.text.width(emFontSize+'em Montserrat');
             while (wordWidth>itemWidth) {
               emFontSize-=0.1;
@@ -423,16 +423,16 @@ var channelsDict = {
 '229':['HGTV', ''], 
 '232':['COOKHD', ''],
 '276':['NGCHD', ''],
-'264':['BBCAHD', ''],
+'264':['BBCAHD', 'bbchd.png'],
 '278':['DSCHD', ''],    
 '237':['BRVOHD', ''],
 '242':['USAHD', ''],    
 '231':['FOODHD', ''],   
 '244':['SyFyHD', ''],   
-'375':['LINK', ''],   
+'375':['LINK', 'link.png'],   
 '025':['WFXT', 'wtfx.png'],   
 '351':['CSP2', ''],   
-'002':['WGBH', ''],   
+'002':['WGBH', 'wgbh.png'],   
 '353':['BTV', ''],    
 '249':['COMHD', ''],    
 '357':['CNBW', ''], 
@@ -443,7 +443,7 @@ var channelsDict = {
 '360':['FOX NEWS', 'fxc.png'], 
 '356':['MNBC', 'msnbc1.png'], 
 '349':['NEWSX', ''],    
-'206':['ESPNHD', ''],
+'206':['ESPNHD', 'espn.png'],
 }
 
 String.prototype.width = function(font) {
