@@ -439,10 +439,10 @@ var channelsDict = {
 '347':['MSNB', 'msnbc1.png'], 
 '202':['CNN', 'cnn.png'],    
 '355':['CNBC', 'cnbc.png'], 
-'350':['CSP1', ''],   
+'350':['CSP1', 'cspan.png'],   
 '360':['FOX NEWS', 'fxc.png'], 
 '356':['MNBC', 'msnbc1.png'], 
-'349':['NEWSX', ''],    
+'349':['NEWSX', 'newsmax.png'],    
 '206':['ESPNHD', 'espn.png'],
 }
 
