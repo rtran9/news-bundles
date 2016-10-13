@@ -8,6 +8,39 @@ window.setTimeout(function(){
 location.reload();
 },3600000);
 
+var IDLE_TIMEOUT = 360; //seconds
+var NUM_STORIES = 16
+var _idleSecondsTimer = null;
+var _idleSecondsCounter = 0;
+var currentStory = 0;
+
+document.onclick = function() {
+    _idleSecondsCounter = 0;
+};
+
+document.onmousemove = function() {
+    _idleSecondsCounter = 0;
+};
+
+document.onkeypress = function() {
+    _idleSecondsCounter = 0;
+};
+
+_idleSecondsTimer = window.setInterval(CheckIdleTime, 1000);
+
+function CheckIdleTime() {
+     _idleSecondsCounter++;
+    if (_idleSecondsCounter >= IDLE_TIMEOUT) {
+      _idleSecondsCounter = 0;
+      selectedStory(currentStory)
+      currentStory++;
+      if (currentStory>=NUM_STORIES) {
+        currentStory=0
+      }
+    }
+}
+
+
 function doResize()
 {
     // FONT SIZE
@@ -441,7 +474,7 @@ var channelsDict = {
 '355':['CNBC', 'cnbc.png'], 
 '350':['CSP1', 'cspan.png'],   
 '360':['FOX NEWS', 'fxc.png'], 
-'356':['MNBC', 'msnbc1.png'], 
+'356':['MNBC', 'msnbc2.png'], 
 '349':['NEWSX', 'newsmax.png'],    
 '206':['ESPNHD', 'espn.png'],
 }

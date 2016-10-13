@@ -21,7 +21,7 @@ def millis_since(num_days='2'):
 
 def get_texts(media):
     segs = media["story_segments"]
-    com_caps = media["commercials_captions"]
+    # com_caps = media["commercials_captions"]
     captions = "closed_captions_no_comm"
     media_url = "media_url_no_comm"
     if not media["module_reports"]["commercial_skip_module"]["removed_commercials"]:
@@ -39,13 +39,15 @@ def get_texts(media):
         if "thumbnail_image" in segs[i]:
             thumb = segs[i]["thumbnail_image"]
         text = ""
-        seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
-        text = " ".join(seg_caps)
+        if "text" in segs[i]:
+            text = segs[i]["text"]
+        # seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
+        # text = " ".join(seg_caps)
         url = "%s#t=%.2f,%.2f"%(media[media_url],start/1000.0,end/1000.0)
         air_date = media["date_added"]
         length = float(end)-float(start)
         temp_name = file_name(url)
-        if len(text.strip())>200 and length>4000 and temp_name not in urls:
+        if len(text.strip())>200 and length>4000:
             texts.append({
                 "text":text, 
                 "start":start, 
