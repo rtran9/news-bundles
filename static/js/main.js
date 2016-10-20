@@ -13,6 +13,7 @@ var NUM_STORIES = 16
 var _idleSecondsTimer = null;
 var _idleSecondsCounter = 0;
 var currentStory = 0;
+var cursor = true;
 
 document.onclick = function() {
     _idleSecondsCounter = 0;
@@ -22,8 +23,21 @@ document.onmousemove = function() {
     _idleSecondsCounter = 0;
 };
 
-document.onkeypress = function() {
+document.onkeypress = function(event) {
     _idleSecondsCounter = 0;
+    console.log (document.documentElement.classList)
+
+    var x = event.which || event.keyCode;
+    if (x==99) {
+      if (cursor) {
+        document.documentElement.classList.add('no-cursor');
+      }
+      else {
+        document.documentElement.classList.remove('no-cursor');
+      }
+      cursor = !cursor;
+
+    }
 };
 
 _idleSecondsTimer = window.setInterval(CheckIdleTime, 1000);
@@ -74,7 +88,7 @@ d3.json("/data", function(error, news) {
   createIndexesDict();
 	makelist();
   makeSly();
-  createImagesFrames();  
+  createImagesFrames();
 	//createStories();
 });
 }
@@ -162,6 +176,7 @@ function createIndexesDict() {
     }
 }
 
+
 function createImagesFrames() {
     var videoSection = document.getElementById("videos-section");
     imagesFrames = {};
@@ -206,7 +221,7 @@ function createImagesFrames() {
             date.appendChild(document.createTextNode(timeConverter(unixDate)));
             date.setAttribute("class", "video-date")
             storyChannelDiv.appendChild(date);
-            
+
 
             var imagesSliderFrame = document.createElement('div')
             imagesSliderFrame.setAttribute("class", "frame image-slider");
@@ -241,10 +256,10 @@ function createImagesFrames() {
                   activeClass: 'active'});
 
             sly.init();
-            
+
             imagesFrames[i][channel] = {"sly":sly, "channelDiv":storyChannelDiv, "date":date};
             storyChannelDiv.style.display = 'none';
-            
+
         }
     }
 }
@@ -275,8 +290,8 @@ function createVideoElement (storyIndex, channel) {
     vid.classList.remove("loading");
   };
 
-  vid.addEventListener('mouseover', function() { this.controls = true; }, false);
-  vid.addEventListener('mouseout', function() { this.controls = false; }, false);
+  // vid.addEventListener('mouseover', function() { this.controls = true; }, false);
+  // vid.addEventListener('mouseout', function() { this.controls = false; }, false);
 
   centerVideo.addEventListener("click", function() {
     if (vid.muted === false) {
@@ -340,7 +355,7 @@ function makelist(array) {
         for (var j=0; j<data.children[i].words.length; j++) {
             word = data.children[i].words[j];
             w = document.createElement('div');
-            
+
             var emFontSize = word.size.map(0, data.vocab_size, 0.5,2.5);
             wordWidth = word.text.width(emFontSize+'em Montserrat');
             while (wordWidth>itemWidth) {
@@ -438,7 +453,7 @@ function getVideosList(storyIndex, channel) {
 function timeConverter(dtstr){
   //EST
   offset = 0;//-5.0
-  
+
   var a = new Date(dtstr+ (3600000*offset));
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var year = a.getFullYear();
@@ -452,30 +467,30 @@ function timeConverter(dtstr){
 }
 
 var channelsDict = {
-'284':['SCIHD',''],  
-'229':['HGTV', ''], 
+'284':['SCIHD',''],
+'229':['HGTV', ''],
 '232':['COOKHD', ''],
 '276':['NGCHD', ''],
 '264':['BBCAHD', 'bbchd.png'],
-'278':['DSCHD', ''],    
+'278':['DSCHD', ''],
 '237':['BRVOHD', ''],
-'242':['USAHD', ''],    
-'231':['FOODHD', ''],   
-'244':['SyFyHD', ''],   
-'375':['LINK', 'link.png'],   
-'025':['WFXT', 'wtfx.png'],   
-'351':['CSP2', ''],   
-'002':['WGBH', 'wgbh.png'],   
-'353':['BTV', ''],    
-'249':['COMHD', ''],    
-'357':['CNBW', ''], 
-'347':['MSNB', 'msnbc1.png'], 
-'202':['CNN', 'cnn.png'],    
-'355':['CNBC', 'cnbc.png'], 
-'350':['CSP1', 'cspan.png'],   
-'360':['FOX NEWS', 'fxc.png'], 
-'356':['MNBC', 'msnbc2.png'], 
-'349':['NEWSX', 'newsmax.png'],    
+'242':['USAHD', ''],
+'231':['FOODHD', ''],
+'244':['SyFyHD', ''],
+'375':['LINK', 'link.png'],
+'025':['WFXT', 'wtfx.png'],
+'351':['CSP2', ''],
+'002':['WGBH', 'wgbh.png'],
+'353':['BTV', ''],
+'249':['COMHD', ''],
+'357':['CNBW', ''],
+'347':['MSNB', 'msnbc1.png'],
+'202':['CNN', 'cnn.png'],
+'355':['CNBC', 'cnbc.png'],
+'350':['CSP1', 'cspan.png'],
+'360':['FOX NEWS', 'fxc.png'],
+'356':['MNBC', 'msnbc2.png'],
+'349':['NEWSX', 'newsmax.png'],
 '206':['ESPNHD', 'espn.png'],
 }
 
