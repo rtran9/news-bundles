@@ -91,8 +91,8 @@ def process_texts(all_segments):
         #clean = [i for i in parts if i not in stopwords and len(re.findall('[a-zA-Z]', i))>2]
         seg["processed"] = clean
 
-    seg_texts = [seg["text"] for seg in all_segments] # list of all tweet texts
-    seg_texts_processed = [str.join(" ", seg["processed"]) for seg in all_segments] # list of pre-processed tweet texts
+    seg_texts = [seg["text"] for seg in all_segments] # list of all segments texts
+    seg_texts_processed = [str.join(" ", seg["processed"]) for seg in all_segments] # list of pre-processed segments texts
     for seg in all_segments:
         seg.pop("processed")
     return seg_texts_processed
