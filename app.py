@@ -44,6 +44,14 @@ def cache_data():
 def index():
     return render_template("index.html")
 
+@app.route("/clusters")
+def cluster():
+    return render_template("cluster.html")
+
+@app.route("/dendrogram")
+def dendrogram():
+    return render_template("dendrogram.html")
+
 
 @app.route("/data")
 def data():

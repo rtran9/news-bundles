@@ -8,6 +8,12 @@ import numpy as np
 from nltk.tokenize import word_tokenize
 from pymongo import MongoClient
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import PCA
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.manifold import MDS
+from scipy.cluster.hierarchy import ward, dendrogram, to_tree
+
+MDS()
 
 urls = []
 DAY = 86400000
@@ -49,13 +55,13 @@ def get_texts(media):
         temp_name = file_name(url)
         if len(text.strip())>200 and length>4000:
             texts.append({
-                "text":text, 
-                "start":start, 
-                "end":end, 
-                "url":url, 
-                "channel":media["channel"], 
-                "length":length, 
-                "date":air_date, 
+                "text":text,
+                "start":start,
+                "end":end,
+                "url":url,
+                "channel":media["channel"],
+                "length":length,
+                "date":air_date,
                 "thumbnail":thumb})
             urls.append(temp_name)
         # elif file_name(url) in urls:
@@ -119,16 +125,60 @@ def run_lda(all_segments, seg_texts_processed):
         topic_summaries.append('-'.join(topic_words))
         # print('Topic {}: {}'.format(i, ' '.join(topic_words)))
 
+    print "running svd"
+    U, s, V = np.linalg.svd(cvz.toarray(), full_matrices=True)
+
+    print "running pca"
+    pca = PCA(n_components=2, copy=True)
+    pca_results  = pca.fit(cvz.toarray())
+    pca_components = pca.components_
+
+    print "calculate distances"
+    dist = 1 - cosine_similarity(cvz)
+
+    print "run mds"
+    # convert two components as we're plotting points in a two-dimensional plane
+    # "precomputed" because we provide a distance matrix
+    # we will also specify `random_state` so the plot is reproducible.
+    mds = MDS(n_components=2, dissimilarity="precomputed", random_state=1)
+    pos = mds.fit_transform(dist)  # shape (n_components, n_samples)
+
+    print "linkage matrix"
+    linkage_matrix = ward(dist) #define the linkage_matrix using ward clustering pre-computed distances
+    T = to_tree( linkage_matrix , rd=False )
+
+    # Create dictionary for labeling nodes by their IDs
+    id2seg = dict(zip(range(len(all_segments)), all_segments))
+
+    # Create a nested dictionary from the ClusterNode's returned by SciPy
+    def add_node(node, parent ):
+    	# First create the new node and append it to its parent's children
+    	newNode = dict( node_id=node.id, children=[] )
+    	parent["children"].append( newNode )
+
+    	# Recursively add the current node's children
+    	if node.left: add_node( node.left, newNode )
+    	if node.right: add_node( node.right, newNode )
+
+    # Initialize nested dictionary for d3, then recursively iterate through tree
+    d3Dendro = dict(children=[], name="Root1")
+    add_node( T, d3Dendro )
+
+
     clusters = []
     for i in range(n_topics):
         clusters.append([])
     doc_topic = lda_model.doc_topic_
     for i, seg in enumerate(all_segments):
-        clusters[doc_topic[i].argmax()].append(seg)
-
-
+        cluster_id = doc_topic[i].argmax()
+        clusters[cluster_id].append(seg)
+        seg["cluster"] = cluster_id
+        seg["pca"] = {"x":pca_components[0][i], "y":pca_components[1][i]}
+        seg["svd"] = {"x": U[i][0], "y": U[i][1]}
+        seg["mds"] = {"x": pos[i][0], "y": pos[i][1]}
     print
-    results = []#{'children':[]}
+
+    results = []
     for i, topic in enumerate(topic_summaries):
         #print topic + " - " + str(len(clusters[i]))
         channels = list(set([seg["channel"] for seg in clusters[i] ]))
@@ -148,7 +198,12 @@ def run_lda(all_segments, seg_texts_processed):
         #     print topic
     topics_to_return = 16 #if n_topics>30 else 9
     return {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
-            'vocab_size':len(vocab)}
+            'vocab_size':len(vocab),
+            'pca_components': pca_components.tolist(),
+            'all_segments': all_segments,
+            'topic_summaries': topic_summaries,
+            'linkage_matrix': linkage_matrix.tolist(),
+            'dendrogram': d3Dendro}
 
 def get_data():
     del urls[:]
@@ -156,7 +211,6 @@ def get_data():
     processed_segments = process_texts(all_segments)
     print ('finished processing segments, running LDA')
     return run_lda(all_segments, processed_segments)
-
 
 if __name__ == '__main__':
     all_segments = get_all_segments()
