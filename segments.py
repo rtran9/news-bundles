@@ -49,13 +49,13 @@ def get_texts(media):
         temp_name = file_name(url)
         if len(text.strip())>200 and length>4000:
             texts.append({
-                "text":text, 
-                "start":start, 
-                "end":end, 
-                "url":url, 
-                "channel":media["channel"], 
-                "length":length, 
-                "date":air_date, 
+                "text":text,
+                "start":start,
+                "end":end,
+                "url":url,
+                "channel":media["channel"],
+                "length":length,
+                "date":air_date,
                 "thumbnail":thumb})
             urls.append(temp_name)
         # elif file_name(url) in urls:
@@ -141,7 +141,6 @@ def run_lda(all_segments, seg_texts_processed):
             'summary':topic,
             'value':len(clusters[i]),
             'segments':sorted_segs_by_channel,
-            'images':[],
             'words':words
             })
         # else:

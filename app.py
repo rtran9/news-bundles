@@ -1,6 +1,7 @@
 import atexit
 import json
 import time
+from pymongo import MongoClient
 from flask import Flask, render_template, jsonify
 from segments import get_data
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -32,13 +33,18 @@ def initialize():
 
 
 def cache_data():
-	print_date_time()
-	print ("starting cache data")
-	data = get_data()
-	with open('static/data/data.json', 'w') as outfile:
-		json.dump(data, outfile)
-		print ('data saved to file')
-	print ("cach data finished")
+    print_date_time()
+    print ("starting cache data")
+    data = get_data()
+    with open('static/data/data.json', 'w') as outfile:
+        json.dump(data, outfile)
+        print ('data saved to file')
+    # save data to mlab database
+    mlab_url = 'mongodb://viral:viralviral@ds145667.mlab.com:45667/news-clusters'
+    clusters_collection = MongoClient(mlab_url)['news-clusters']['clusters']
+    data["timestamp"] = time.time()
+    result = clusters_collection.insert_one(data)
+    print ("cach data finished")
 
 @app.route("/")
 def index():
@@ -52,8 +58,13 @@ def data():
 	return jsonify(d)
 
 @app.route("/get_data")
-def get_now_data():
+def get_new_data():
 	return jsonify(get_data())
+
+@app.route("/cache_data")
+def run_cache_data():
+    cache_data()
+    return ("cached_data")
 
 
 if __name__ == "__main__":
