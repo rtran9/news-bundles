@@ -141,7 +141,8 @@ def run_lda(all_segments, seg_texts_processed):
             'summary':topic,
             'value':len(clusters[i]),
             'segments':sorted_segs_by_channel,
-            'words':words
+            'words':words,
+            'ratio':(len(clusters[i])*1.0)/(len(all_segments)*1.0)
             })
         # else:
         #     print topic
