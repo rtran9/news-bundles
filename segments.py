@@ -56,7 +56,9 @@ def get_texts(media):
                 "channel":media["channel"],
                 "length":length,
                 "date":air_date,
-                "thumbnail":thumb})
+                "thumbnail":thumb,
+                "media_id": str(media["_id"]),
+                "segment_index": i})
             urls.append(temp_name)
         # elif file_name(url) in urls:
         #     print media["_id"]
@@ -95,6 +97,7 @@ def process_texts(all_segments):
     seg_texts_processed = [str.join(" ", seg["processed"]) for seg in all_segments] # list of pre-processed segments texts
     for seg in all_segments:
         seg.pop("processed")
+        seg.pop("text")
     return seg_texts_processed
 
 def run_lda(all_segments, seg_texts_processed):
