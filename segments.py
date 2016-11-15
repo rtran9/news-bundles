@@ -146,8 +146,9 @@ def run_lda(all_segments, seg_texts_processed):
         # else:
         #     print topic
     topics_to_return = 16 #if n_topics>30 else 9
-    return {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
-            'vocab_size':len(vocab)}
+    return {'data': {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
+                      'vocab_size':len(vocab)},
+            'all_clusters':{'children':results, 'vocab_size': len(vocab)}}
 
 def get_data():
     del urls[:]

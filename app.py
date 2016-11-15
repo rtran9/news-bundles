@@ -37,13 +37,13 @@ def cache_data():
     print ("starting cache data")
     data = get_data()
     with open('static/data/data.json', 'w') as outfile:
-        json.dump(data, outfile)
+        json.dump(data['data'], outfile)
         print ('data saved to file')
     # save data to mlab database
     mongo_url = 'mongodb://um.media.mit.edu:27017/super-glue'
     clusters_collection = MongoClient(mongo_url)['perspectives']['clusters']
-    data["timestamp"] = time.time()
-    result = clusters_collection.insert_one(data)
+    data['all_clusters']["timestamp"] = time.time()
+    result = clusters_collection.insert_one(data['all_clusters'])
     print ("cach data finished")
 
 @app.route("/")
