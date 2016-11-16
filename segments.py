@@ -47,8 +47,7 @@ def get_texts(media):
         text = ""
         if "text" in segs[i]:
             text = segs[i]["text"]
-        # seg_caps = [cap["text"] for i,cap in enumerate(media[captions]) if cap["start"]>=start and cap["start"]<end and i not in com_caps ]
-        # text = " ".join(seg_caps)
+
         url = "%s#t=%.2f,%.2f"%(media[media_url],start/1000.0,end/1000.0)
         air_date = media["date_added"]
         length = float(end)-float(start)
@@ -64,8 +63,6 @@ def get_texts(media):
                 "date":air_date,
                 "thumbnail":thumb})
             urls.append(temp_name)
-        # elif file_name(url) in urls:
-        #     print media["_id"]
     return texts
 
 def get_all_segments():
@@ -212,7 +209,15 @@ def get_data():
     print ('finished processing segments, running LDA')
     return run_lda(all_segments, processed_segments)
 
+<<<<<<< Updated upstream
 if __name__ == '__main__':
     all_segments = get_all_segments()
     processed_segments = process_texts(all_segments)
     run_lda(all_segments, processed_segments)
+=======
+
+# if __name__ == '__main__':
+#     all_segments = get_all_segments()
+#     processed_segments = process_texts(all_segments)
+#     run_lda(all_segments, processed_segments)
+>>>>>>> Stashed changes
