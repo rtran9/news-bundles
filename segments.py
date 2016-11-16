@@ -21,15 +21,6 @@ def millis_since(num_days='2'):
 
 def get_texts(media):
     segs = media["story_segments"]
-    # com_caps = media["commercials_captions"]
-    captions = "closed_captions_no_comm"
-    media_url = "media_url_no_comm"
-    if not media["module_reports"]["commercial_skip_module"]["removed_commercials"]:
-        media_url = "media_url"
-        if "closed_captions_aligned" in media:
-            captions = "closed_captions_aligned"
-        else:
-            captions = "closed_captions"
     texts = []
     file_name = lambda x:''.join(x.split('.')[4:])
     for i in range (len(segs)):
