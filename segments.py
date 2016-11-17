@@ -209,15 +209,7 @@ def get_data():
     print ('finished processing segments, running LDA')
     return run_lda(all_segments, processed_segments)
 
-<<<<<<< Updated upstream
-if __name__ == '__main__':
-    all_segments = get_all_segments()
-    processed_segments = process_texts(all_segments)
-    run_lda(all_segments, processed_segments)
-=======
-
 # if __name__ == '__main__':
 #     all_segments = get_all_segments()
 #     processed_segments = process_texts(all_segments)
 #     run_lda(all_segments, processed_segments)
->>>>>>> Stashed changes
