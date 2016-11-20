@@ -152,7 +152,7 @@ def run_lda(all_segments, vectors, vocab):
     topics_to_return = 16 #if n_topics>30 else 9
     return {'data': {'children':sorted(results, key=lambda k:k['value'], reverse=True)[:topics_to_return],
                       'max_size':words_sizes[0,words_sizes.argmax()]},
-            'all_clusters':{'children':long_results}}
+            'all_clusters':{'all_clusters':long_results}}
 
 def get_data():
     # get stopwords and vocabulary from db
