@@ -167,6 +167,7 @@ function makeSly() {
 
 function createIndexesDict() {
     indexes = {};
+    //data = data.data;
     for(var i = 0; i<data.children.length; i++) {
         indexes[i] = {};
         for (var j=0; j< data.children[i].segments.length; j++) {
@@ -356,7 +357,7 @@ function makelist(array) {
             word = data.children[i].words[j];
             w = document.createElement('div');
 
-            var emFontSize = word.size.map(0, data.vocab_size, 0.5,2.5);
+            var emFontSize = Math.log(word.size).map(0, Math.log(data.max_size), 0.5,2.5);
             wordWidth = word.text.width(emFontSize+'em Montserrat');
             while (wordWidth>itemWidth) {
               emFontSize-=0.1;
