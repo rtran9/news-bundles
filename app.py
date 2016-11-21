@@ -41,7 +41,7 @@ def cache_data():
         print ('data saved to file')
     # save data to mlab database
     mongo_url = 'mongodb://um.media.mit.edu:27017/super-glue'
-    clusters_collection = MongoClient(mongo_url)['perspectives']['clusters']
+    clusters_collection = MongoClient(mongo_url)['perspectives']['clusters_full']
     data['all_clusters']["timestamp"] = time.time()
     result = clusters_collection.insert_one(data['all_clusters'])
     print ("cach data finished")
