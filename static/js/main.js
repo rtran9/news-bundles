@@ -167,7 +167,7 @@ function makeSly() {
 
 function createIndexesDict() {
     indexes = {};
-    data = data.data;
+    //data = data.data;
     for(var i = 0; i<data.children.length; i++) {
         indexes[i] = {};
         for (var j=0; j< data.children[i].segments.length; j++) {
@@ -377,7 +377,7 @@ function makelist(array) {
             var wordRect = w.getBoundingClientRect();
             var clusterRect = item.getBoundingClientRect();
             if (wordRect.bottom > clusterRect.bottom-3) {
-              // remove word
+              // remove
               w.parentNode.removeChild(w);
               console.log("out!! "+w.text);
             }
