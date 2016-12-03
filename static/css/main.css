@@ -185,6 +185,22 @@ h1, h2, h3, h4, h5, h6 {
                                          translateX(-50%) and translateY(-50%) */
 
 }
+
+video {
+border: 7px solid #e8e8e8;
+}
+
+@keyframes blink {
+   50% { border-color: rgba(128, 128, 128, 0.8);
+   box-shadow: 0 0 9px rgba(128, 128, 128, 1); }
+}
+
+.video-highlight {
+  border-color: rgba(247, 225, 85, 1);
+  box-shadow: 0 0 9px rgba(247, 225, 85, 1);
+  /*animation: blink .5s step-end infinite alternate;*/
+}
+
 video.loading {
   background: black url(../images/loader.gif) center center no-repeat;
   background-size: 50%, auto;

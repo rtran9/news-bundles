@@ -167,7 +167,7 @@ function makeSly() {
 
 function createIndexesDict() {
     indexes = {};
-    //data = data.data;
+    data = data.data;
     for(var i = 0; i<data.children.length; i++) {
         indexes[i] = {};
         for (var j=0; j< data.children[i].segments.length; j++) {
@@ -297,9 +297,11 @@ function createVideoElement (storyIndex, channel) {
   centerVideo.addEventListener("click", function() {
     if (vid.muted === false) {
     // Play the video
+    vid.classList.remove('video-highlight');
     vid.muted = true;
     } else {
     // Pause the video
+    vid.classList.add('video-highlight');
     vid.muted = false;
     }
     });
@@ -357,15 +359,28 @@ function makelist(array) {
             word = data.children[i].words[j];
             w = document.createElement('div');
 
-            var emFontSize = Math.log(word.size).map(0, Math.log(data.max_size), 0.5,2.5);
-            wordWidth = word.text.width(emFontSize+'em Montserrat');
+            var log_word_size = Math.log(word.size)
+            var emFontSize = log_word_size.map(0, Math.log(data.max_size), 0.4,2.3);
+
+            wordWidth = getTextWidth(word.text, emFontSize+'em Montserrat');
+            // wordWidth = word.text.width(emFontSize+'em Montserrat');
             while (wordWidth>itemWidth) {
               emFontSize-=0.1;
-              wordWidth = word.text.width(emFontSize+'em Montserrat');
+              wordWidth = getTextWidth(word.text, emFontSize+'em Montserrat');
+              // wordWidth = word.text.width(emFontSize+'em Montserrat');
             }
             w.setAttribute("style", "font-size:"+emFontSize+"em;");
             w.appendChild(document.createTextNode(word.text));
             p.appendChild(w);
+
+            // text that this words width is not out of the cluster
+            var wordRect = w.getBoundingClientRect();
+            var clusterRect = item.getBoundingClientRect();
+            if (wordRect.bottom > clusterRect.bottom-3) {
+              // remove word
+              w.parentNode.removeChild(w);
+              console.log("out!! "+w.text);
+            }
         }
     }
 }
@@ -437,7 +452,7 @@ function changeSrc(index, storyIndex, channel) {
     // load the video
     vid.load();
     vid.setAttribute("poster","data:image/gif,AAAA");
-    vid.setAttribute("class","loading");
+    vid.classList.add("loading");
     //play the video
     vid.play();
 }
@@ -506,3 +521,18 @@ String.prototype.width = function(font) {
 
   return w;
 }
+
+function getTextWidth(text, font) {
+    // re-use canvas object for better performance
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+    var context = canvas.getContext("2d");
+    context.font = font;
+    var metrics = context.measureText(text);
+    return metrics.width;
+}
+
+$.fn.textWidth = function(text, font) {
+    if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
+    $.fn.textWidth.fakeEl.text(text || this.val() || this.text()).css('font', font || this.css('font'));
+    return $.fn.textWidth.fakeEl.width();
+};
