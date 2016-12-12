@@ -7,10 +7,12 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
 
+
 t = time.time()
 
 # number of documents to pull
-NUM_DOCUMENTS = 36
+PARTITION_SIZE = 6
+NUM_DOCUMENTS = 24
 
 # connect to database
 MONGO="mongodb://um.media.mit.edu:27017/super-glue"
@@ -29,112 +31,173 @@ documents = clusters.find({}, {
 documents = sorted(documents, key= lambda x: x["timestamp"])
 documents = documents[:NUM_DOCUMENTS]
 
-a = documents[0]["all_clusters"]
 
-# every story is defined by (vector, summary, ratio, timestamp)
-data = []
-labels = []
-score = []
-timestamp = []
+def cluster(documents):
+    # cluster a set of documents
+    data = []
+    labels = []
+    score = []
+    timestamp = []
 
-#exit()
+    for doc in documents:
+        for story in doc["all_clusters"]:
+            if "ratio" not in story:
+                # some filtering required here,
+                # ignore stories without ratios
+                continue
 
-for doc in documents:
-    for story in doc["all_clusters"]:
-        if "ratio" not in story:
-            # some filtering required here,
-            # ignore stories without ratios
-            continue
+            ratio = story["ratio"]
+            labels.append(story["summary"])
 
-        ratio = story["ratio"]
-        labels.append(story["summary"])
+            story_words = {}
 
-        story_words = {}
+            # sum word occurrence
+            total = 0.0
+            for word in story["words"]:
+                total += word["size"]
 
-        # sum word occurrence
-        total = 0.0
-        for word in story["words"]:
-            total += word["size"]
+            distance = 0.0
+            for word in story["words"]:
+                text = word["text"]
+                word_ratio = word["size"]/total
+                story_words[text] = word_ratio
+                distance += word_ratio**2
 
-        distance = 0.0
-        for word in story["words"]:
-            text = word["text"]
-            word_ratio = word["size"]/total
-            story_words[text] = word_ratio
-            distance += word_ratio**2
+            distance = distance**0.5
 
-        distance = distance**0.5
+            # normalize to 1
+            for word in story_words:
+                # weight words in proportion to the other words in story
+                story_words[word] = story_words[word]/distance
 
-        # normalize to 1
-        for word in story_words:
-            # weight words in proportion to the other words in story
-            story_words[word] = story_words[word]/distance
+            data.append(story_words)
+            score.append(ratio)
 
-        data.append(story_words)
-        score.append(ratio)
+            # timestamp as defined by when it was inserted into the mongo db
+            timestamp.append(doc["timestamp"])
 
-        # timestamp as defined by when it was inserted into the mongo db
-        timestamp.append(doc["timestamp"])
+    matrix = DictVectorizer().fit_transform(data).toarray()
 
-matrix = DictVectorizer().fit_transform(data).toarray()
+    # calculate the avg distance between every pair of points
+    # used only to help find epsilon
+    distance = 0.0
+    number = 0.0
+
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            if i == j:
+                continue
+            number += 1
+            dist = numpy.linalg.norm(matrix[i] - matrix[j])
+            distance += dist
+
+    #print "avg distance ", distance/number
+
+    cluster = DBSCAN(eps=0.75, min_samples=1, n_jobs=-1)
+    db = cluster.fit_predict(matrix)
+
+    r = {}
+    for i in range(len(db)):
+        classification = db[i]
+
+        if classification in r:
+            r[classification].append((data[i], labels[i], score[i], timestamp[i]))
+
+        else:
+            r[classification] = [(data[i], labels[i], score[i], timestamp[i])]
+
+    return r
+
+def pick_best_vector(vectors):
+    return vectors[0]
+
+def merge_clusters(clusters):
+    if len(clusters) <= 1:
+        return clusters
+    mid = len(clusters)/2
+    left = merge_clusters(clusters[:mid])
+    right = merge_clusters(clusters[mid:])
+    return merge(left, right)
+
+def merge(l, r):
+    if not l:
+        return r
+    if not r:
+        return l
+
+    left = l[0]
+    right = r[0]
+
+    count = 1
+    data = []
+    id = []
+
+    m_left = {}
+    m_right = {}
+
+    for cluster in left:
+        points = []
+        for point in left[cluster]:
+            points.append(point[0])
+        # pick the best vector
+        #reduce number of vectors here
+        best = pick_best_vector(points)
+        data.append(best)
+        id.append(count)
+        m_left[count] = cluster
+
+        count += 1
+
+    for cluster in right:
+
+        points = []
+        #print cluster
+        for point in right[cluster]:
+            points.append(point[0])
+
+        # pick the best vector
+        best = pick_best_vector(points)
+        data.append(best)
+        id.append(count)
+        m_right[count] = cluster
+        count += 1
+
+    matrix = DictVectorizer().fit_transform(data).toarray()
+    cluster = DBSCAN(eps=0.75, min_samples=1, n_jobs=-1)
+    db = cluster.fit_predict(matrix)
+
+    r = {}
+
+    for i in range(len(db)):
+        classification = db[i]
+        point_id = id[i]
+
+        if classification in r:
+            if point_id in m_left:
+                r[classification].extend(left[m_left[point_id]])
+            elif point_id in m_right:
+                r[classification].extend(right[m_right[point_id]])
+
+        else:
+            if point_id in m_left:
+                r[classification] = left[m_left[point_id]]
+            elif point_id in m_right:
+                r[classification] = right[m_right[point_id]]
+
+    return [r]
 
 
-# calculate the avg distance between every pair of points
-# used only to help find epsilon
-distance = 0.0
-number = 0.0
+def initialize(docs, n):
+    #partition into groups of n
+    documents = list(docs)
+    clusters = []
+    while len(documents) > n:
+        temp = documents[:n]
+        clusters.append(cluster(temp))
+        documents = documents[n:]
+    clusters.append(cluster(documents))
 
-for i in range(len(matrix)):
-    for j in range(len(matrix)):
-        if i == j:
-            continue
-        number += 1
-        dist = numpy.linalg.norm(matrix[i] - matrix[j])
-        distance += dist
-
-print "avg distance ", distance/number
-
-cluster = DBSCAN(eps=0.75, min_samples=1, n_jobs=-1)
-db = cluster.fit_predict(matrix)
-
-# evaluate = {}
-#
-# e = 5.0
-#
-# while e < 7.5:
-#     cluster = DBSCAN(eps=e, min_samples=1, n_jobs=-1)
-#     print "Running DBSCAN on", len(documents), "documents.", e
-#     start = time.time()
-#
-#
-#     db = cluster.fit_predict(matrix)
-#     score =  metrics.silhouette_score(matrix, cluster.labels_)
-#     evaluate[e] = score
-#     print("Silhouette Coefficient: %0.3f" % score)
-#     e += 0.1
-
-
-# convert results back
-# a classification is given some id
-# contains { "points" : [(timestamp, ratio), ...], "stories" : [string, ...], "size": int}
-results = {}
-for i in range(len(db)):
-    classification = db[i]
-
-    if classification in results:
-        results[classification]["size"] += 1
-        results[classification]["stories"].append(labels[i])
-        results[classification]["points"].append((timestamp[i], score[i]))
-
-    else:
-        results[classification] = {
-            "stories": [labels[i]],
-            "points": [(timestamp[i], score[i])],
-            "size": 1
-        }
-
-
-print results, len(results), len(matrix)
+    return clusters
 
 # visualization
 def create_graph(data):
@@ -180,5 +243,45 @@ def create_graph(data):
 
     plt.show()
 
-print time.time() - t
+def clean_results(results):
+    r = {}
+
+    for i in results:
+        #print i
+        #print results[i][0]
+        r[i] = {
+            "size": len(results[i]),
+            "stories": [],
+            "points": []
+        }
+
+        #print r[i]["size"]
+
+        for j in results[i]:
+            label = j[1]
+            point = (j[3], j[2])
+            r[i]["stories"].append(label)
+            r[i]["points"].append(point)
+
+        # for j in results[i]:
+        #     print type(j)
+        #     r[i]["stories"].append(j[1])
+        #     r[i]["points"].append((j[2], j[3]))
+
+    return r
+
+# partitioned
+results = merge_clusters(initialize(documents, PARTITION_SIZE))[0]
+print "time", time.time() - t
+print len(results)
+results = clean_results(results)
+
+# single go
+t = time.time()
+without = cluster(documents)
+print "time", time.time() - t
+print len(without)
+
+
 create_graph(results)
+
